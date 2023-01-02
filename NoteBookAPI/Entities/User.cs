@@ -19,6 +19,12 @@ namespace NoteBookAPI.Entities
         public ICollection<Email> Emails { get; set; } = new List<Email>();
 
         public ICollection<Phone> Phones { get; set; } = new List<Phone>();
+
         public ICollection<AssetDto> AssetDtos { get; set; } = new List<AssetDto>();
+ /*       public AssetDto AssetDto { get; set; } = new AssetDto();*/
+
+
+
+
     }
 }

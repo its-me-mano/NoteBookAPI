@@ -8,8 +8,9 @@ namespace NoteBookAPI.Profiles
     {
         public UserProfile() {
             CreateMap<Models.UserCreatingDto,Entities.User>().ReverseMap();
-            CreateMap<Models.UserUpdatingDto,Entities.User>();
+            CreateMap<Models.UserUpdatingDto,Entities.User>().ReverseMap();
             CreateMap<Entities.User, Models.UserDto>();
+            
         }
 
     }

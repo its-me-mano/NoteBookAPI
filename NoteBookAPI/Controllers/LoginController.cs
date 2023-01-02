@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -103,15 +104,17 @@ namespace NoteBookAPI.Controllers
                     }
                     else
                     {
-                        return NotFound();
+                        return StatusCode(401,"Check your loginId and Password");
                     }
                 }
                 else { 
-                    return NotFound("Password should Contains UpperCase,LowerCase,More than 8 Characters");
+                   // return NotFound("Password should Contains UpperCase,LowerCase,More than 8 Characters");
+                    return StatusCode(401, "Password should Contains UpperCase,LowerCase,More than 8 Characters");
                 }
             }
             else {
-                return NotFound("Emailspace should contains email Id");
+                // return NotFound("Emailspace should contains email Id");
+                return StatusCode(401, "Emailspace should contains email Id");
             }
 
 

@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using NoteBookAPI.DbContexts;
 using NoteBookAPI.Helper;
+using NoteBookAPI.Models;
+
 namespace NoteBookAPI.Services
 {
     public class UserDetailRepositary : IUserDetailRepositary
     {
         private readonly UserDetailsContext _context;
-
         public PageList<User> GetUsers(UserResourceParameter userResourceParameter)
         {
             if (userResourceParameter == null)
@@ -88,9 +89,10 @@ namespace NoteBookAPI.Services
             return _context.Users.Where(a=>a.UserId==id).FirstOrDefault();
         }
 
-        public void UpdateUser(User user)
+        public void UpdateUser(User user,Guid userId)
         {
-
+            var Data = _context.Users.Where(a => a.UserId == userId).FirstOrDefault();
+            _context.SaveChanges();
         }
 
         public IEnumerable<User> GetAllUsers()
@@ -217,6 +219,10 @@ namespace NoteBookAPI.Services
             return _context.PhNumbers.Where(a => a.UserId == id);
         }
 
+        public Guid getAssetId(Guid userId) {
+            return _context.ImageStores.Where(e => e.UserId == userId).FirstOrDefault().FileId;
+        }
+
 
         public void uploadImage(ImageStore img)
         {
@@ -260,6 +266,8 @@ namespace NoteBookAPI.Services
         {
             return _context.AssetDtos.Where(a => a.UserId == id);
         }
+
+        
 
     }
 }

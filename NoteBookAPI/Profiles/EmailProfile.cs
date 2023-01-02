@@ -14,7 +14,7 @@ namespace NoteBookAPI.Profiles
                 opt => opt.MapFrom(src => (Guid.Parse(src.type)))
             ).ReverseMap();
             CreateMap<EmailUpdatingDto, Entities.Email>().ForMember(
-                dest => dest.TypeId,
+                dest => dest.TypeId,    
                 opt => opt.MapFrom(src => (Guid.Parse(src.type)))
             ).ReverseMap();
             CreateMap<EmailDto, Entities.Email>().ReverseMap();

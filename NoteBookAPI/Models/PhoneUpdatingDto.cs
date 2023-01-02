@@ -9,5 +9,6 @@ namespace NoteBookAPI.Models
     {
         public string PhoneNumber { get; set; }
         public string type { get; set; }
+        public Guid PhId { get; set; }
     }
 }

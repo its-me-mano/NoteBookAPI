@@ -43,26 +43,31 @@ namespace NoteBookAPI.Controllers
         [HttpGet(Name = "GetAllUser")]
         public ActionResult<IEnumerable<User>> GetUsers([FromQuery] UserResourceParameter userResourceParameter)
         {
+            var CountBook = _userDetailRepositary.GetCount();
+            double MaxPageNo = (double)CountBook/(double)(userResourceParameter.PageSize);
+            int MaxiPage = Convert.ToInt32(Math.Ceiling(MaxPageNo));
+            if (MaxiPage< userResourceParameter.PageNo) {
+                return NotFound("There is no pageNo");
+            }
             var ResourceFromRepo = _userDetailRepositary.GetUsers(userResourceParameter);
-
             var items = _mapper.Map<IEnumerable<UserDto>>(ResourceFromRepo);
             var userFromRepo = _userDetailRepositary.GetAllUsers();
             foreach (var user in items)
             {
                 var emails = _userDetailRepositary.GetEmailIds(user.UserId);
-                var Address = _userDetailRepositary.GetAddressIds(user.UserId);
+                var Address = _userDetailRepositary.GetAddressIds(user.UserId); 
                 var Phone = _userDetailRepositary.GetPhoneIds(user.UserId);
                 var AssetDto = _userDetailRepositary.GetAssetIds(user.UserId);
                 var emailType = _mapper.Map <IEnumerable<EmailDto>>(emails);
                 var AddressType = _mapper.Map<IEnumerable<AddressDto>>(Address);
                 var PhoneType = _mapper.Map<IEnumerable<PhoneDto>>(Phone);
-                var AssetTyp = _mapper.Map<IEnumerable<AssetDto1>>(AssetDto);
-
+                var AssetType = _mapper.Map<IEnumerable<AssetDto1>>(AssetDto);
+                 
                 user.Phones = PhoneType.ToList();
                 user.Emails = emailType.ToList();
                 user.Address = AddressType.ToList();
-                user.AssetDtos = AssetTyp.ToList();
-                      
+       
+                user.AssetDtos = AssetType.ToList();
             }
             return Ok(_mapper.Map<IEnumerable<UserDto>>(items));
         }
@@ -104,7 +109,7 @@ namespace NoteBookAPI.Controllers
         [HttpGet("count")]
         public IActionResult GetCount()
         {
-            var counts = _userDetailRepositary.GetAllUsers();
+            var counts = _userDetailRepositary.GetCount();
             return Ok($"Success : {counts}");
         }
         /*
@@ -116,20 +121,24 @@ namespace NoteBookAPI.Controllers
         [HttpGet("{userId}", Name = "GetUser")]
         public IActionResult GetUser(Guid userId)
         {
-            var UserFromRepo = _userDetailRepositary.GetUser(userId);
-            if (UserFromRepo == null)
+            if (_userDetailRepositary.UserExits(userId))
             {
-                return NotFound("check the userId");
+                var UserFromRepo = _userDetailRepositary.GetUser(userId);
+                var emails = _userDetailRepositary.GetEmailIds(UserFromRepo.UserId);
+                var Address = _userDetailRepositary.GetAddressIds(UserFromRepo.UserId);
+                var Phone = _userDetailRepositary.GetPhoneIds(UserFromRepo.UserId);
+                var AssetDto = _userDetailRepositary.GetAssetIds(UserFromRepo.UserId);
+                UserFromRepo.Phones = Phone.ToList();
+                UserFromRepo.Emails = emails.ToList();
+                UserFromRepo.Address = Address.ToList();
+                UserFromRepo.AssetDtos = AssetDto.ToList();
+                return new JsonResult(UserFromRepo);
             }
-            var emails = _userDetailRepositary.GetEmailIds(UserFromRepo.UserId);
-            var Address = _userDetailRepositary.GetAddressIds(UserFromRepo.UserId);
-            var Phone = _userDetailRepositary.GetPhoneIds(UserFromRepo.UserId);
-            var AssetDto = _userDetailRepositary.GetAssetIds(UserFromRepo.UserId);
-            UserFromRepo.Phones = Phone.ToList();
-            UserFromRepo.Emails = emails.ToList();
-            UserFromRepo.Address = Address.ToList();
-            UserFromRepo.AssetDtos = AssetDto.ToList();
-            return new JsonResult(UserFromRepo);
+            else {
+                return NotFound("Check the userId");
+            }
+            
+            
         }
         /*
 
@@ -152,7 +161,7 @@ namespace NoteBookAPI.Controllers
             _userDetailRepositary.DeleteUser(userFromRepo);
             _userDetailRepositary.Save();
 
-            return NoContent();
+            return StatusCode(200, "Address book deleted successfully");
         }
         /*
                                                     CREATE USER
@@ -207,7 +216,7 @@ namespace NoteBookAPI.Controllers
             _userDetailRepositary.Save();
 
             var userToReturn = _mapper.Map<UserDto>(userEntity);
-            return Ok(userToReturn.UserId);
+            return StatusCode(201,$"GetUserID : {userToReturn.UserId}");
 
             /*return CreatedAtRoute("GetUserId",new { userId=userToReturn.UserId},userToReturn);*/
         }
@@ -227,10 +236,12 @@ namespace NoteBookAPI.Controllers
             {
                 return new JsonResult(userId);
             }
+
             if (!_userDetailRepositary.IsPasswordValid(user.password))
             {
                 return BadRequest("Password is not valid");
             }
+
             foreach (var item in user.Emails)
             {
                 if (!_userDetailRepositary.metaExist(item.type))
@@ -242,9 +253,8 @@ namespace NoteBookAPI.Controllers
                     return Conflict("Email is already exist");
                 }
                 item.type = (_userDetailRepositary.TypeFinder(item.type)).TypeId.ToString();
-
-
             }
+
             foreach (var item in user.Phones)
             {
                 if (!_userDetailRepositary.metaExist(item.type))
@@ -252,6 +262,7 @@ namespace NoteBookAPI.Controllers
                 item.type = (_userDetailRepositary.TypeFinder(item.type)).TypeId.ToString();
 
             }
+             
             foreach (var item in user.Address)
             {
                 if (!_userDetailRepositary.metaExist(item.Country))
@@ -260,7 +271,7 @@ namespace NoteBookAPI.Controllers
                 }
                 if (!_userDetailRepositary.metaExist(item.Type))
                 {
-                    return NotFound("Addresstype is not exist");
+                    return NotFound($"Addresstype is not exist");
                 }
                 item.Type = (_userDetailRepositary.TypeFinder(item.Type)).TypeId.ToString();
                 item.Country = (_userDetailRepositary.TypeFinder(item.Country)).TypeId.ToString();
@@ -270,18 +281,26 @@ namespace NoteBookAPI.Controllers
             {
                 return NotFound();
             }
-            if (userFromRepo == null)
-            {
-                return NotFound();
+            var AddressGuid =_userDetailRepositary.GetAddressIds(userId).ToList();
+            foreach (var item in userFromRepo.Address.ToList()) {
+                item.AddressId = AddressGuid[0].AddressId; 
             }
-            _mapper.Map(user,userFromRepo);
-        
-            _userDetailRepositary.UpdateUser(userFromRepo);
+            var EmailGuid = _userDetailRepositary.GetEmailIds(userId).ToList();
+            var PhoneGuid = _userDetailRepositary.GetPhoneIds(userId).ToList();
+            foreach(var item in userFromRepo.Emails.ToList())
+            {
+                item.EmailId = EmailGuid[0].EmailId;
+            }
+            foreach (var item in userFromRepo.Phones.ToList()) {
+                item.PhId = PhoneGuid[0].PhId;
+            }
+            _mapper.Map(user, userFromRepo);
+            _userDetailRepositary.UpdateUser(userFromRepo,userId);
             _userDetailRepositary.Save();
-            return NoContent();
+            return StatusCode(200,"");
         }
     
-     /*       _userDetailRepositary.UpdateUser(userFromRepo);*/
+    
             
          
 

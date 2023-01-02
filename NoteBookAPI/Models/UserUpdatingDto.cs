@@ -16,5 +16,6 @@ namespace NoteBookAPI.Models
 
        public ICollection<PhoneUpdatingDto> Phones { get; set; } = new List<PhoneUpdatingDto>();
         public ICollection<AssetUpdateDto> AssetDtos { get; set; } = new List<AssetUpdateDto>();
+        /*   public AssetUpdateDto AssetDtos { get; set; } = new AssetUpdateDto();*/
     }
 }

@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NoteBookAPI.Helper;
+using NoteBookAPI.Models;
 
 namespace NoteBookAPI.Services
 {
     public interface IUserDetailRepositary
     {
+        Guid getAssetId(Guid userId);
         bool metaExist(string type);
         bool EmailExist(string email);
         PageList<User> GetUsers(UserResourceParameter userResourceParameter);
@@ -23,7 +25,9 @@ namespace NoteBookAPI.Services
         IEnumerable<Email> GetEmailIds(Guid id);
         IEnumerable<Address> GetAddressIds(Guid id);
         IEnumerable<Phone> GetPhoneIds(Guid id);
-        void UpdateUser(User user);
+
+
+        void UpdateUser(User user,Guid userId);
    
         bool UserExits(Guid userId);
         Guid EmailIdOfUser(string email);
@@ -43,6 +47,7 @@ namespace NoteBookAPI.Services
         public void UpdateAsset(AssetDto assetDto);
         public AssetDto GetAssetById(Guid id);
 
+      
 
 
 

@@ -8,7 +8,7 @@ namespace NoteBookAPI.Helper
     public class UserResourceParameter
     {
         public string FirstName { get; set; }
-        const int maxPageSize = 3;
+        const int maxPageSize = 4;
         public int PageNo { get; set; } = 1;
 
         private int _pageSize = 2;

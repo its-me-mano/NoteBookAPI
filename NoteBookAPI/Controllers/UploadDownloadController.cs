@@ -60,12 +60,15 @@ namespace NoteBookAPI.Controllers
 
                 imageCreateDto.File = Convert.ToBase64String(fileBytes);
                 imageCreateDto.UserId = userId;
+                imageCreateDto.FileId = new Guid();
                 
-               
                 var ImageEntity = _mapper.Map<ImageStore>(imageCreateDto);
-              
+                _userDetailRepositary.uploadImage(ImageEntity);
+                _userDetailRepositary.Save();
+
                 AssetDtoCreating assetDtoCreating = new AssetDtoCreating();
-                assetDtoCreating.fieldId = ImageEntity.FileId;
+                assetDtoCreating.fieldId = _userDetailRepositary.getAssetId(userId);
+          
         
                 assetDtoCreating.UserId = userId;
                 if (_userDetailRepositary.CheckAsset(userId))
@@ -85,8 +88,7 @@ namespace NoteBookAPI.Controllers
                 }
                 imageCreateDto.FileId = ImageEntity.FileId;
 
-                _userDetailRepositary.uploadImage(ImageEntity);
-                _userDetailRepositary.Save();
+               
                 return new JsonResult(ImageEntity);
             }
           
@@ -106,7 +108,6 @@ namespace NoteBookAPI.Controllers
             byte[] bytesInStream = outputStream.ToArray();
 
             return File(bytesInStream, "APPLICATION/octnet-stream");
-
         }
 
 
