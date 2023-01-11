@@ -94,7 +94,7 @@ namespace NoteBookAPI.Controllers
                 _logger.LogInformation("File uploaded successfully");
               
 
-                return new JsonResult(imageCreateDto);
+                return new JsonResult(ImageEntity);
             }
             
         

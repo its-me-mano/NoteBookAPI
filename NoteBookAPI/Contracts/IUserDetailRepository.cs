@@ -20,7 +20,6 @@ namespace NoteBookAPI.Services
         User GetUser(Guid id);
         IEnumerable<Email> GetEmails();
         IEnumerable<User> GetAllUsers();
-       // void AddImage(SaveImage saveImage);
         void AddUser(User user);
         IEnumerable<Email> GetEmailIds(Guid id);
         IEnumerable<Address> GetAddressIds(Guid id);
