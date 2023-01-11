@@ -2,10 +2,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using NoteBookAPI.Entities;
 using NoteBookAPI.Models;
 using NoteBookAPI.Services;
+using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,72 +20,50 @@ namespace NoteBookAPI.Controllers
     public class MetaDataController : ControllerBase
     {
         private IConfiguration _config;
-        private readonly IUserDetailRepositary _userDetailRepositary;
+        private readonly IUserDetailRepository _userDetailRepositary;
         private readonly IMapper _mapper;
+        private readonly IService _service;
+        private readonly ILogger _logger;
 
-
-        public MetaDataController(IUserDetailRepositary UserDetailRepositary, IMapper mapper, IConfiguration config)
+        public MetaDataController(IUserDetailRepository UserDetailRepositary, IMapper mapper,IService service,ILogger logger)
         {
             _userDetailRepositary = UserDetailRepositary ?? throw new ArgumentNullException(nameof(UserDetailRepositary));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _config = config ?? throw new ArgumentNullException(nameof(config));
+            _service = service ?? throw new ArgumentNullException(nameof(service));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            
         }
 
-        [Authorize]
-        [HttpGet("{number}")]
-        public IActionResult refSet(int number) {
-            switch (number) {
-                case 1:
-                    string search = "ADDRESS_TYPE";
-                    var RefTermFromRepo = _userDetailRepositary.getRefTerm(search);
-                    var ResultFromRepo = _userDetailRepositary.getRefSetGroup(RefTermFromRepo.ReftermId);
-                    var RefSetFromRepo = _userDetailRepositary.getRefSet(ResultFromRepo);
-                    var value = _mapper.Map<IEnumerable<RefSetDto>>(RefSetFromRepo);
-                    metaDataDto meta = new metaDataDto();
-                    meta.Description = RefTermFromRepo.Description;
-                    meta.ReftermId = RefTermFromRepo.ReftermId;
-                    meta.Types = RefTermFromRepo.Types;
-                    meta.RefSets = value.ToList();
-                    return new JsonResult(meta);
-                case 2:
-                    string search1 = "PHONE_NUMBER_TYPE";
-                    var RefTermFromRepo1 = _userDetailRepositary.getRefTerm(search1);
-                    var ResultFromRepo1 = _userDetailRepositary.getRefSetGroup(RefTermFromRepo1.ReftermId);
-                    var RefSetFromRepo1 = _userDetailRepositary.getRefSet(ResultFromRepo1);
-                    var value1 = _mapper.Map<IEnumerable<RefSetDto>>(RefSetFromRepo1);
-                    metaDataDto meta1 = new metaDataDto();
-                    meta1.Description = RefTermFromRepo1.Description;
-                    meta1.ReftermId = RefTermFromRepo1.ReftermId;
-                    meta1.Types = RefTermFromRepo1.Types;
-                    meta1.RefSets = value1.ToList();
-                    return new JsonResult(meta1);
-                case 3:
-                    string search2 = "EMAIL_ADDRESS_TYPE";
-                    var RefTermFromRepo2 = _userDetailRepositary.getRefTerm(search2);
-                    var ResultFromRepo2 = _userDetailRepositary.getRefSetGroup(RefTermFromRepo2.ReftermId);
-                    var RefSetFromRepo2 = _userDetailRepositary.getRefSet(ResultFromRepo2);
-                    var value2 = _mapper.Map<IEnumerable<RefSetDto>>(RefSetFromRepo2);
-                    metaDataDto meta2 = new metaDataDto();
-                    meta2.Description = RefTermFromRepo2.Description;
-                    meta2.ReftermId = RefTermFromRepo2.ReftermId;
-                    meta2.Types = RefTermFromRepo2.Types;
-                    meta2.RefSets = value2.ToList();
-                    return new JsonResult(meta2);
-                case 4:
-                    string search3 = "COUNTRY";
-                    var RefTermFromRepo3 = _userDetailRepositary.getRefTerm(search3);
-                    var ResultFromRepo3 = _userDetailRepositary.getRefSetGroup(RefTermFromRepo3.ReftermId);
-                    var RefSetFromRepo3 = _userDetailRepositary.getRefSet(ResultFromRepo3);
-                    var value3 = _mapper.Map<IEnumerable<RefSetDto>>(RefSetFromRepo3);
-                    metaDataDto meta3 = new metaDataDto();
-                    meta3.Description = RefTermFromRepo3.Description;
-                    meta3.ReftermId = RefTermFromRepo3.ReftermId;
-                    meta3.Types = RefTermFromRepo3.Types;
-                    meta3.RefSets = value3.ToList();
-                    return new JsonResult(meta3);
-                default:
-                    return NotFound();
 
+        /// <summary>
+        /// Metadata API
+        /// </summary>
+        /// <remarks>To get the metadata list like Address Type, Email address type, phone number type, country</remarks>
+        /// <param name="searchKey"></param>
+        /// <response code="200">Success</response>
+        /// <response code="404">NotFound</response>
+        /// <response code="400">The user input is not valid.</response>
+        /// <response code="401">The user is not authorized.</response>
+        /// <response code="500">Internal Server Error</response>
+        [SwaggerOperation("Metadata API")]
+        [SwaggerResponse(statusCode: 200, "Success!")]
+        [SwaggerResponse(statusCode: 400, "The user input is not valid")]
+        [SwaggerResponse(statusCode: 401, "The user is not authorized")]
+        [SwaggerResponse(statusCode: 404, "The user  is not found")]
+        [SwaggerResponse(statusCode: 500, "Internal Server Error")]
+        [Authorize]
+        [HttpGet("{search-Key}")]
+        public IActionResult refSet([FromRoute(Name ="search-Key")][Required]string searchKey) {
+            _logger.LogInformation("Search metadata initiated");
+            metaDataDto value = _service.MetaData(searchKey);
+            if (value == null)
+            {
+                _logger.LogError("searchkey not found");
+                return NotFound();
+            }
+            else {
+                _logger.LogInformation("MetaData found successfully");
+                return new JsonResult(value);
             }
         }
     

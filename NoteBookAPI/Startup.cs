@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,14 +9,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
+using NoteBookAPI.Controllers;
 using NoteBookAPI.DbContexts;
-using NoteBookAPI.Profiles;
 using NoteBookAPI.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace NoteBookAPI
 {
@@ -54,15 +50,39 @@ namespace NoteBookAPI
             {
                 setupAction.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             }).AddXmlDataContractSerializerFormatters();
-            services.AddScoped<IUserDetailRepositary, UserDetailRepositary>();
+
+            services.AddSwaggerGen(c =>
+            {
+                c.EnableAnnotations();
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "NoteBookAPI",
+                    Version = "v1"
+                });
+            });
+     
+
+
+            services.AddScoped<IUserDetailRepository, UserDetailsRepository>();
+            services.AddScoped<IService, Service>();
             
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            
-      
+
+
             services.AddDistributedMemoryCache();
+            var serviceProvider = services.BuildServiceProvider();
+            var logger = serviceProvider.GetService<ILogger<LoginController>>();
+            var logger1 = serviceProvider.GetService<ILogger<MetaDataController>>();
+            var logger2 = serviceProvider.GetService<ILogger<UserController>>();
+            var logger3 = serviceProvider.GetService<ILogger<FileController>>();
+            services.AddSingleton(typeof(ILogger), logger);
+            services.AddSingleton(typeof(ILogger), logger1);
+            services.AddSingleton(typeof(ILogger), logger2);
+            services.AddSingleton(typeof(ILogger), logger3);
 
 
-           
+
+
             services.AddDbContext<UserDetailsContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
@@ -89,6 +109,12 @@ namespace NoteBookAPI
             }
             app.UseAuthentication();
             app.UseStaticFiles();
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "NoteBookAPI");
+            });
             app.UseRouting();
 
             app.UseAuthorization();

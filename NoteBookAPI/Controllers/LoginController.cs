@@ -1,21 +1,17 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Logging;
 using NoteBookAPI.Entities;
 using NoteBookAPI.Helper;
 using NoteBookAPI.Models;
 using NoteBookAPI.Services;
+using Swashbuckle.AspNetCore.Annotations;
 using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.Net.Mail;
+
 
 namespace NoteBookAPI.Controllers
 {
@@ -24,102 +20,58 @@ namespace NoteBookAPI.Controllers
     public class LoginController : ControllerBase
     {
         private IConfiguration _config;
-        private readonly IUserDetailRepositary _userDetailRepositary;
+        private readonly IUserDetailRepository _userDetailRepositary;
         private readonly IMapper _mapper;
-   
+        private readonly IService _service;
+        private readonly ILogger _logger;
 
-        public LoginController(IUserDetailRepositary UserDetailRepositary, IMapper mapper, IConfiguration config)
+
+        public LoginController(ILogger logger,IUserDetailRepository UserDetailRepositary, IMapper mapper, IConfiguration config, IService service)
         {
             _userDetailRepositary = UserDetailRepositary ?? throw new ArgumentNullException(nameof(UserDetailRepositary));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _config = config ?? throw new ArgumentNullException(nameof(config));
-        
-        }
-/*
-
-                                                   AUTHORIZATION SECTION
-
-*/
-        private string GenerateJSONWebToken(User userInfo)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var claims = new[] {
-        new Claim(JwtRegisteredClaimNames.Sub, userInfo.FirstName),
-         new Claim(JwtRegisteredClaimNames.Sub, userInfo.LastName),
-         new Claim(JwtRegisteredClaimNames.Sub, userInfo.password),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-    };
-
-            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
-                _config["Jwt:Issuer"],
-                claims,
-                expires: DateTime.Now.AddMinutes(120),
-                signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            _service = service ?? throw new ArgumentNullException(nameof(service));
+            _logger = logger ?? throw new ArgumentException(nameof(logger));
         }
 
-        private bool AuthenticateUser(User login,LoginCredentialsDto input)
-        {
-   
 
-            //Validate the User Credentials    
-           
-            if (login.password == input.password )
-            {
-                return true;
-            }
-            else {
-                return false;
-            }
-            
-        }
-/*
-                                                  REST API SECTION
-
-
-
-*/
-
+        /// <summary>
+        /// Login
+        /// </summary>
+        /// <remarks>To get access the address book</remarks>
+        /// <param name="loginCredentials"></param>
+        /// <response code="200">Success</response>
+        /// <response code="401">The user input is not authorized.</response>
+        /// <response code="500">Internal Server Error</response>
+        [SwaggerOperation("UserLogin")]
+        [SwaggerResponse(statusCode: 200, "Success!")]
+        [SwaggerResponse(statusCode: 401, "The user is not authorized")]
+        [SwaggerResponse(statusCode: 500, "Internal Server Error")]
         [AllowAnonymous]
         [HttpPost]
-        public IActionResult UserLogin([FromBody] LoginCredentialsDto loginCredentials)
+        public IActionResult UserLogin([Required][FromBody] LoginCredentialsDto loginCredentials)
         {
-            if (_userDetailRepositary.IsEmailValid(loginCredentials.email))
-            {
-                if (_userDetailRepositary.IsPasswordValid(loginCredentials.password))
+                _logger.LogInformation("Authentication Initiated");
+                Guid GetUserId = _userDetailRepositary.EmailIdOfUser(loginCredentials.EmailAddress);
+                User User = _userDetailRepositary.GetUser(GetUserId);
+                IActionResult response = Unauthorized();
+                bool check = _service.AuthenticateUser(User, loginCredentials);
+                if (check)
                 {
-                    var GetUserId = _userDetailRepositary.EmailIdOfUser(loginCredentials.email);
-                    var User = _userDetailRepositary.GetUser(GetUserId);
-                    IActionResult response = Unauthorized();
-                    bool check = AuthenticateUser(User, loginCredentials);
-                    if (check)
-                    {
-                        var tokenString = GenerateJSONWebToken(User);
-                        LoginResult responseToReturn = new LoginResult();
-                        responseToReturn.accessToken = tokenString;
-                        return new JsonResult(responseToReturn);
-                    }
-                    else
-                    {
-                        return StatusCode(401,"Check your loginId and Password");
-                    }
+                    string tokenString = _service.GenerateJSONWebToken(User,_config);
+                    LoginResult responseToReturn = new LoginResult();
+                    responseToReturn.accessToken = tokenString;
+                    _logger.LogError("Logged in successfully");
+                    return new JsonResult(responseToReturn);
                 }
-                else { 
-                   // return NotFound("Password should Contains UpperCase,LowerCase,More than 8 Characters");
-                    return StatusCode(401, "Password should Contains UpperCase,LowerCase,More than 8 Characters");
+                else
+                {
+                    _logger.LogError("LoginId and password is wrong");
+                    return StatusCode(401, "Check your loginId and Password");
                 }
-            }
-            else {
-                // return NotFound("Emailspace should contains email Id");
-                return StatusCode(401, "Emailspace should contains email Id");
-            }
-
-
+            
+            
         }
-
-
     }
 }

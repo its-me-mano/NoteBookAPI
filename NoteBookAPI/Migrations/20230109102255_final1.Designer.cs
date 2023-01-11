@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NoteBookAPI.DbContexts;
 
 namespace NoteBookAPI.Migrations
 {
     [DbContext(typeof(UserDetailsContext))]
-    partial class UserDetailsContextModelSnapshot : ModelSnapshot
+    [Migration("20230109102255_final1")]
+    partial class final1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,7 +48,7 @@ namespace NoteBookAPI.Migrations
                     b.Property<string>("Line2")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("StateName")
+                    b.Property<string>("State")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("Type")
@@ -74,11 +76,11 @@ namespace NoteBookAPI.Migrations
                             City = "madurai",
                             Country = new Guid("1f1f245d-c63b-42f6-b592-49b5b16bf861"),
                             CreateBy = new Guid("f46f9dba-8a1c-4dd9-a8ea-c572a83be0be"),
-                            DateCreated = new DateTime(2023, 1, 9, 18, 55, 3, 356, DateTimeKind.Local).AddTicks(9908),
+                            DateCreated = new DateTime(2023, 1, 9, 15, 52, 55, 132, DateTimeKind.Local).AddTicks(3800),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Line1 = "hello",
                             Line2 = "solunga",
-                            StateName = "tamilnadu",
+                            State = "tamilnadu",
                             Type = new Guid("abad70c5-11db-42f8-9e3a-487023f1b1cc"),
                             UpdateBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             UserId = new Guid("f46f9dba-8a1c-4dd9-a8ea-c572a83be0be"),
@@ -90,11 +92,11 @@ namespace NoteBookAPI.Migrations
                             City = "madurai",
                             Country = new Guid("1f1f245d-c63b-42f6-b592-49b5b16bf861"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 9, 18, 55, 3, 357, DateTimeKind.Local).AddTicks(13),
+                            DateCreated = new DateTime(2023, 1, 9, 15, 52, 55, 132, DateTimeKind.Local).AddTicks(3890),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Line1 = "hello",
                             Line2 = "solunga",
-                            StateName = "tamilnadu",
+                            State = "tamilnadu",
                             Type = new Guid("abad70c5-11db-42f8-9e3a-487023f1b1cc"),
                             UpdateBy = new Guid("00000000-0000-0000-0000-000000000000"),
                             UserId = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
@@ -149,9 +151,6 @@ namespace NoteBookAPI.Migrations
                     b.Property<DateTime>("DateUpdated")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("EmailAddress")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("TypeId")
                         .HasColumnType("uniqueidentifier");
 
@@ -160,6 +159,9 @@ namespace NoteBookAPI.Migrations
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("email")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -172,23 +174,23 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("d019119e-245b-45d2-93df-b4cbbdfeac9f"),
                             CreateBy = new Guid("f46f9dba-8a1c-4dd9-a8ea-c572a83be0be"),
-                            DateCreated = new DateTime(2023, 1, 9, 18, 55, 3, 357, DateTimeKind.Local).AddTicks(2404),
+                            DateCreated = new DateTime(2023, 1, 9, 15, 52, 55, 132, DateTimeKind.Local).AddTicks(6366),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            EmailAddress = "itsmemano123@gmail.com",
                             TypeId = new Guid("abad70c5-11db-42f8-9e3a-487023f1b1cc"),
                             UpdateBy = new Guid("00000000-0000-0000-0000-000000000000"),
-                            UserId = new Guid("f46f9dba-8a1c-4dd9-a8ea-c572a83be0be")
+                            UserId = new Guid("f46f9dba-8a1c-4dd9-a8ea-c572a83be0be"),
+                            email = "itsmemano123@gmail.com"
                         },
                         new
                         {
                             Id = new Guid("8c50f920-4b3a-4565-a8b6-0b635b429a98"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 9, 18, 55, 3, 357, DateTimeKind.Local).AddTicks(2499),
+                            DateCreated = new DateTime(2023, 1, 9, 15, 52, 55, 132, DateTimeKind.Local).AddTicks(6470),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            EmailAddress = "itsmemano@gmail.com",
                             TypeId = new Guid("abad70c5-11db-42f8-9e3a-487023f1b1cc"),
                             UpdateBy = new Guid("00000000-0000-0000-0000-000000000000"),
-                            UserId = new Guid("68417748-6864-4866-8d9b-b82ae29da396")
+                            UserId = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
+                            email = "itsmemano@gmail.com"
                         });
                 });
 
@@ -230,7 +232,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("00793011-a986-49f0-879b-86023edaff46"),
                             CreateBy = new Guid("f46f9dba-8a1c-4dd9-a8ea-c572a83be0be"),
-                            DateCreated = new DateTime(2023, 1, 9, 18, 55, 3, 357, DateTimeKind.Local).AddTicks(1213),
+                            DateCreated = new DateTime(2023, 1, 9, 15, 52, 55, 132, DateTimeKind.Local).AddTicks(5055),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PhoneNumber = "8925250061",
                             TypeId = new Guid("abad70c5-11db-42f8-9e3a-487023f1b1cc"),
@@ -241,7 +243,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("8c50f920-4b3a-4565-a8b6-0b635b429a98"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 9, 18, 55, 3, 357, DateTimeKind.Local).AddTicks(1260),
+                            DateCreated = new DateTime(2023, 1, 9, 15, 52, 55, 132, DateTimeKind.Local).AddTicks(5100),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PhoneNumber = "9488977667",
                             TypeId = new Guid("abad70c5-11db-42f8-9e3a-487023f1b1cc"),
@@ -259,7 +261,7 @@ namespace NoteBookAPI.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Key")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -272,31 +274,31 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("abad70c5-11db-42f8-9e3a-487023f1b1cc"),
                             Description = @"It is used to the detail mentioned all about personal",
-                            Key = "PERSONAL"
+                            Name = "PERSONAL"
                         },
                         new
                         {
                             Id = new Guid("0d80e411-064c-4025-abd3-b10373c5b0c7"),
                             Description = @"The detail mentioned is all about Work based",
-                            Key = "WORK"
+                            Name = "WORK"
                         },
                         new
                         {
                             Id = new Guid("1f1f245d-c63b-42f6-b592-49b5b16bf861"),
                             Description = @"Country",
-                            Key = "INDIA"
+                            Name = "INDIA"
                         },
                         new
                         {
                             Id = new Guid("e7c0cab2-367b-4b60-805f-8b20cdadc599"),
                             Description = @"Country",
-                            Key = "UNITED_STATES"
+                            Name = "UNITED_STATES"
                         },
                         new
                         {
                             Id = new Guid("7b135772-658f-4bdf-a01c-cedba350cb41"),
                             Description = @"Alternate number",
-                            Key = "ALTERNATE"
+                            Name = "ALTERNATE"
                         });
                 });
 
@@ -455,7 +457,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("f46f9dba-8a1c-4dd9-a8ea-c572a83be0be"),
                             CreateBy = new Guid("f46f9dba-8a1c-4dd9-a8ea-c572a83be0be"),
-                            DateCreated = new DateTime(2023, 1, 9, 18, 55, 3, 355, DateTimeKind.Local).AddTicks(2646),
+                            DateCreated = new DateTime(2023, 1, 9, 15, 52, 55, 130, DateTimeKind.Local).AddTicks(7662),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FirstName = "Sakthi",
                             LastName = "Vel",
@@ -466,7 +468,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 9, 18, 55, 3, 355, DateTimeKind.Local).AddTicks(8798),
+                            DateCreated = new DateTime(2023, 1, 9, 15, 52, 55, 131, DateTimeKind.Local).AddTicks(2592),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FirstName = "Manoj",
                             LastName = "Kumar",

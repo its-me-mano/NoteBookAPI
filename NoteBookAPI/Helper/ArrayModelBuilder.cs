@@ -15,16 +15,16 @@ namespace NoteBookAPI.Helper
                 bindingContext.Result = ModelBindingResult.Failed();
                 return Task.CompletedTask;
             }
-            var value = bindingContext.ValueProvider.GetValue(bindingContext.ModelName).ToString();
+            string value = bindingContext.ValueProvider.GetValue(bindingContext.ModelName).ToString();
             if (string.IsNullOrWhiteSpace(value)) {
                 bindingContext.Result = ModelBindingResult.Success(null);
                 return Task.CompletedTask; 
             }
 
-            var elementType = bindingContext.ModelType.GetTypeInfo().GenericTypeArguments[0];
-            var Converter = TypeDescriptor.GetConverter(elementType);
-            var values = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(x => Converter.ConvertFromString(x.Trim())).ToArray();
-            var typeValues = Array.CreateInstance(elementType, values.Length);
+            Type elementType = bindingContext.ModelType.GetTypeInfo().GenericTypeArguments[0];
+            TypeConverter Converter = TypeDescriptor.GetConverter(elementType);
+            object[] values = value.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(x => Converter.ConvertFromString(x.Trim())).ToArray();
+            Array typeValues = Array.CreateInstance(elementType, values.Length);
             values.CopyTo(typeValues, 0);
             bindingContext.Model = typeValues;
 
