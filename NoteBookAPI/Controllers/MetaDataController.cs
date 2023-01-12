@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NoteBookAPI.Contracts;
 using NoteBookAPI.Entities;
 using NoteBookAPI.Models;
 using NoteBookAPI.Services;
@@ -20,21 +21,18 @@ namespace NoteBookAPI.Controllers
     public class MetaDataController : ControllerBase
     {
         private IConfiguration _config;
-        private readonly IUserDetailRepository _userDetailRepositary;
+        private readonly IMetaDataRepositories _MetaDataRepository;
         private readonly IMapper _mapper;
-        private readonly IService _service;
+        private readonly IMetaDataServices _service;
         private readonly ILogger _logger;
-
-        public MetaDataController(IUserDetailRepository UserDetailRepositary, IMapper mapper,IService service,ILogger logger)
+        public MetaDataController(IMetaDataRepositories MetaDataRepository, IMapper mapper,IMetaDataServices service,ILogger logger)
         {
-            _userDetailRepositary = UserDetailRepositary ?? throw new ArgumentNullException(nameof(UserDetailRepositary));
+            _MetaDataRepository = MetaDataRepository ?? throw new ArgumentNullException(nameof(MetaDataRepository));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _service = service ?? throw new ArgumentNullException(nameof(service));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             
         }
-
-
         /// <summary>
         /// Metadata API
         /// </summary>
@@ -52,14 +50,14 @@ namespace NoteBookAPI.Controllers
         [SwaggerResponse(statusCode: 404, "The user  is not found")]
         [SwaggerResponse(statusCode: 500, "Internal Server Error")]
         [Authorize]
-        [HttpGet("{search-Key}")]
-        public IActionResult refSet([FromRoute(Name ="search-Key")][Required]string searchKey) {
+        [HttpGet("{Key}")]
+        public IActionResult RefSet([FromRoute(Name ="Key")][Required]string Key) {
             _logger.LogInformation("Search metadata initiated");
-            metaDataDto value = _service.MetaData(searchKey);
+            MetaDataDto value = _service.FetchMetaData(Key);
             if (value == null)
             {
-                _logger.LogError("searchkey not found");
-                return NotFound();
+                _logger.LogError("Key not found");
+                return NotFound("Key not found");
             }
             else {
                 _logger.LogInformation("MetaData found successfully");

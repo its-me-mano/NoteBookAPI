@@ -9,8 +9,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
+using NoteBookAPI.Contracts;
 using NoteBookAPI.Controllers;
 using NoteBookAPI.DbContexts;
+using NoteBookAPI.Repositories;
 using NoteBookAPI.Services;
 using System;
 using System.Text;
@@ -63,9 +65,15 @@ namespace NoteBookAPI
      
 
 
-            services.AddScoped<IUserDetailRepository, UserDetailsRepository>();
-            services.AddScoped<IService, Service>();
-            
+            services.AddScoped<IUserDetailRepositories, UserDetailsRepositories>();
+            services.AddScoped<IUserServices, UserServices>();
+            services.AddScoped<IFileRepositories, FileRepositories>();
+            services.AddScoped<IFileServices, FileServices>();
+            services.AddScoped<ILoginRepositories, LoginRepositories>();
+            services.AddScoped<ILoginServices, LoginServices>();
+            services.AddScoped<IMetaDataRepositories, MetaDataRepositories>();
+            services.AddScoped<IMetaDataServices, MetaDataServices>();
+
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 

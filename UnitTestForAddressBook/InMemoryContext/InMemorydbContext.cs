@@ -143,7 +143,7 @@ namespace UnitTestForAddressBook.InMemoryContext
                 {
                     string[] csvCols = csvRow.Split(",");
                     RefTerm refTerm = new RefTerm();
-                    refTerm.ReftermId = Guid.Parse(csvCols[0].ToString());
+                    refTerm.Id = Guid.Parse(csvCols[0].ToString());
                     refTerm.Key = csvCols[1].ToString();
                     refTerm.Description = csvCols[2].ToString();
                     context.RetTerms.Add(refTerm);
@@ -160,7 +160,7 @@ namespace UnitTestForAddressBook.InMemoryContext
                     SetRefTerm setRefTerm = new SetRefTerm();
                     setRefTerm.ReftermId = Guid.Parse(csvCols[0].ToString());
                     setRefTerm.RefSetid = Guid.Parse(csvCols[1].ToString());
-                    setRefTerm.SetRefTermId = Guid.Parse(csvCols[2].ToString());
+                    setRefTerm.Id = Guid.Parse(csvCols[2].ToString());
                     context.SetRefTerms.Add(setRefTerm);
                 }
             }

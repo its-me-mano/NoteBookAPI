@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace NoteBookAPI.Models
 {
-    public class AddressUpdatingDto : Entities.Dto.BaseModelDto
+    public class AddressUpdatingDto : BaseModelDto
     {
 
     

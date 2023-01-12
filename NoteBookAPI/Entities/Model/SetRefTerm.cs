@@ -4,31 +4,26 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace NoteBookAPI.Entities
 {
-    public class SetRefTerm 
+    [DataContract]
+    public class SetRefTerm : BaseModel
     {
-        ///<summary>
-        /// Id of the SetRefTerm 
-        ///</summary>
-        [Key]
-        public Guid SetRefTermId { get; set; }
-
-        [ForeignKey("RefSetid")]
         ///<summary>
         /// refset Id 
         ///</summary>
+        [DataMember(Name = "refSet_id")]
+        [ForeignKey("RefSetid")]
         public Guid RefSetid { get; set; }
-
 
         ///<summary>
         /// refterm id 
         ///</summary>
         [ForeignKey("ReftermId")]
+        [DataMember(Name = "refterm_id")]
         public Guid ReftermId { get; set; }
-
-      
     }
 }

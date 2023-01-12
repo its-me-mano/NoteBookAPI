@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NoteBookAPI.Contracts;
 using NoteBookAPI.Entities;
 using NoteBookAPI.Helper;
 using NoteBookAPI.Models;
@@ -11,7 +12,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mail;
-
+using System.Security.Claims;
 
 namespace NoteBookAPI.Controllers
 {
@@ -20,22 +21,18 @@ namespace NoteBookAPI.Controllers
     public class LoginController : ControllerBase
     {
         private IConfiguration _config;
-        private readonly IUserDetailRepository _userDetailRepositary;
+        private readonly ILoginRepositories _loginRepository;
         private readonly IMapper _mapper;
-        private readonly IService _service;
+        private readonly ILoginServices _service;
         private readonly ILogger _logger;
-
-
-        public LoginController(ILogger logger,IUserDetailRepository UserDetailRepositary, IMapper mapper, IConfiguration config, IService service)
+        public LoginController(ILogger logger,ILoginRepositories LoginRepository, IMapper mapper, IConfiguration config, ILoginServices service)
         {
-            _userDetailRepositary = UserDetailRepositary ?? throw new ArgumentNullException(nameof(UserDetailRepositary));
+            _loginRepository = LoginRepository ?? throw new ArgumentNullException(nameof(LoginRepository));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _service = service ?? throw new ArgumentNullException(nameof(service));
             _logger = logger ?? throw new ArgumentException(nameof(logger));
         }
-
-
         /// <summary>
         /// Login
         /// </summary>
@@ -53,8 +50,8 @@ namespace NoteBookAPI.Controllers
         public IActionResult UserLogin([Required][FromBody] LoginCredentialsDto loginCredentials)
         {
                 _logger.LogInformation("Authentication Initiated");
-                Guid GetUserId = _userDetailRepositary.EmailIdOfUser(loginCredentials.EmailAddress);
-                User User = _userDetailRepositary.GetUser(GetUserId);
+                Guid UserId = _loginRepository.EmailIdOfUser(loginCredentials.EmailAddress);
+                User User = _loginRepository.GetUser(UserId);
                 IActionResult response = Unauthorized();
                 bool check = _service.AuthenticateUser(User, loginCredentials);
                 if (check)
@@ -62,16 +59,14 @@ namespace NoteBookAPI.Controllers
                     string tokenString = _service.GenerateJSONWebToken(User,_config);
                     LoginResult responseToReturn = new LoginResult();
                     responseToReturn.accessToken = tokenString;
-                    _logger.LogError("Logged in successfully");
+                    _logger.LogInformation("Logged in successfully");
                     return new JsonResult(responseToReturn);
                 }
                 else
                 {
-                    _logger.LogError("LoginId and password is wrong");
-                    return StatusCode(401, "Check your loginId and Password");
-                }
-            
-            
+                    _logger.LogError("EmailId and password is wrong");
+                    return StatusCode(401, "Check your EmailId and Password");
+                }   
         }
     }
 }

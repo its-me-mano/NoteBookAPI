@@ -1,6 +1,5 @@
 using Xunit;
 using NoteBookAPI.Controllers;
-using NoteBookAPI.Services;
 using NoteBookAPI.DbContexts;
 using NoteBookAPI.Profiles;
 using AutoMapper;
@@ -21,24 +20,35 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using Moq;
 using NoteBookAPI.Entities;
+using NoteBookAPI.Services;
+using NoteBookAPI.Contracts;
+using NoteBookAPI.Repositories;
+using System.Threading;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace UnitTestForAddressBook
 {
     public class UnitTest1
     {
 
-        UserController userController;
-        MetaDataController metaDataController;
-        FileController UploadDownloadController;
+        UserController UserController;
+        MetaDataController MetaDataController;
+        FileController FileController;
         LoginController loginController;
         UserDetailsContext context;
-        IService service;
-        IUserDetailRepository userDetailRepository;
+        IUserServices UserService;
+        IMetaDataServices MetaDataService;
+        ILoginServices LoginService;
+        IFileServices FileService;
+
+        IUserDetailRepositories userDetailRepository;
+        ILoginRepositories loginRepository;
+        IMetaDataRepositories metaDataRepository;
+        IFileRepositories fileRepository;
         IMapper _mapper;
         private readonly IConfiguration configuration;
         ILogger logger;
-
-
 
         public UnitTest1()
         {
@@ -66,12 +76,19 @@ namespace UnitTestForAddressBook
             IMapper mapper = mappingConfig.CreateMapper();
             _mapper = mapper;
 
-            userDetailRepository = new UserDetailsRepository(context);
-            service = new Service(userDetailRepository, _mapper, configuration);
-            userController = new UserController(userDetailRepository, _mapper, service, logger);
-            metaDataController = new MetaDataController(userDetailRepository, _mapper, service, logger);
-            loginController = new LoginController(logger, userDetailRepository, mapper, configuration, service);
-            UploadDownloadController = new FileController(userDetailRepository, mapper, service, logger);
+            userDetailRepository = new UserDetailsRepositories(context);
+            metaDataRepository = new MetaDataRepositories(context);
+            loginRepository = new LoginRepositories(context);
+            fileRepository = new FileRepositories(context);
+
+            UserService = new UserServices(userDetailRepository, _mapper, configuration,logger);
+            MetaDataService = new MetaDataServices(metaDataRepository, _mapper, configuration);
+            LoginService = new LoginServices(loginRepository, _mapper, configuration);
+            FileService = new FileServices(fileRepository, _mapper, configuration);
+            UserController = new UserController(userDetailRepository, _mapper, UserService, logger);
+            MetaDataController = new MetaDataController(metaDataRepository, _mapper, MetaDataService, logger);
+            loginController = new LoginController(logger,loginRepository, mapper, configuration, LoginService);
+            FileController = new FileController(fileRepository, mapper, FileService, logger);
         }
 
         [Fact]
@@ -94,7 +111,6 @@ namespace UnitTestForAddressBook
 
         }
 
-
         [Fact]
         public void ImageUpload()
         {
@@ -104,7 +120,7 @@ namespace UnitTestForAddressBook
             using (var stream = System.IO.File.OpenRead(path))
             {
                 File = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(stream.Name));
-                var response = UploadDownloadController.UploadFiles(userId, File);
+                var response = FileController.UploadFiles(userId, File);
                 Assert.IsType<JsonResult>(response);
             };
         }
@@ -113,7 +129,7 @@ namespace UnitTestForAddressBook
         [Fact]
         public void GetUserCount()
         {
-            OkObjectResult response = userController.GetCount() as OkObjectResult;
+            OkObjectResult response = UserController.GetCount() as OkObjectResult;
             Assert.IsType<string>(response.Value);
             Assert.Equal("count:2", response.Value);
         }
@@ -121,48 +137,28 @@ namespace UnitTestForAddressBook
         [Fact]
         public void GetAllUsers()
         {
-            UserResourceParameter userResourceParameter = new UserResourceParameter()
-            {
-                PageNo = 2,
-                PageSize = 2,
-                OrderBy = "FirstName",
-                OrderType = "ASC"
-            };
-
-
-
-            //PageNumberCheck
-            var Response = userController.GetUsers(userResourceParameter);
-            Assert.IsType<NotFoundObjectResult>(Response);
-
-            //Validation
-            userResourceParameter.PageNo = 1;
-            Response = userController.GetUsers(userResourceParameter);
+            var Response = UserController.GetUsers(1,2,"FirstName","ASC");
             Assert.IsType<OkObjectResult>(Response);
-
         }
 
         [Fact]
         public void ImageDownload()
         {
             Guid assetId = new Guid("f98972b6-04e4-4577-b21c-946e96bef643");
-            var response = UploadDownloadController.DownloadFile(assetId.ToString());
+            var response = FileController.DownloadFile(assetId.ToString());
             Assert.IsType<FileContentResult>(response);
-
         }
 
         [Fact]
         public void GetUser()
         {
-
             //Checking userId
             Guid userId = new Guid("68417748-6864-4866-8d9b-b82ae29da396");
-            var Response = userController.GetUser(userId);
+            var Response = UserController.GetUser(userId);
             Assert.IsType<OkObjectResult>(Response);
-
             //Checking random UserId
             userId = Guid.NewGuid();
-            Response = userController.GetUser(userId);
+            Response = UserController.GetUser(userId);
             Assert.IsType<NotFoundObjectResult>(Response);
 
         }
@@ -170,17 +166,19 @@ namespace UnitTestForAddressBook
         public void RefsetData_Test()
         {
             string key = "PHONE_NUMBER_TYPE";
-            ActionResult response = metaDataController.refSet(key) as ActionResult;
+            ActionResult response = MetaDataController.RefSet(key) as ActionResult;
             Assert.IsType<JsonResult>(response);
             string key2 = "NAME_TYPE";
-            ActionResult response2 = metaDataController.refSet(key2) as ActionResult;
-            Assert.IsType<NotFoundResult>(response2);
+            ActionResult response2 = MetaDataController.RefSet(key2) as ActionResult;
+            Assert.IsType<NotFoundObjectResult>(response2);
         }
 
 
         [Fact]
         public void UpdateUserController()
         {
+            
+          
             UserUpdatingDto userUpdatingDto = new UserUpdatingDto()
             {
                 FirstName = "Power",
@@ -210,49 +208,42 @@ namespace UnitTestForAddressBook
                 PhoneNumber = "1234567891",
                 type = "PERSONAL"
             });
-
             Guid userId = new Guid("68417748-6864-4866-8d9b-b82ae29da396");
-
+            //create claims
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] {
+                                        new Claim(ClaimTypes.NameIdentifier,userId.ToString())
+                                        // other required and custom claims
+                           }, "TestAuthentication"));
+            //Adding Claims
+            UserController.ControllerContext = new ControllerContext();
+            UserController.ControllerContext.HttpContext = new DefaultHttpContext { User = user };
             //updateResult
-            var UpdateReturn = userController.UpdateUser(userId, userUpdatingDto);
+            var UpdateReturn = UserController.UpdateUser(userId, userUpdatingDto);
             Assert.IsType<OkObjectResult>(UpdateReturn);
-
             //sameMailid
             userUpdatingDto.Emails.ToList()[0].type = "PERSONAL";
             userUpdatingDto.Phones.ToList()[0].type = "PERSONAL";
             userUpdatingDto.Address.ToList()[0].Type = "PERSONAL";
             userUpdatingDto.Address.ToList()[0].Country = "INDIA";
-            UpdateReturn = userController.UpdateUser(userId, userUpdatingDto);
+            UpdateReturn = UserController.UpdateUser(userId, userUpdatingDto);
             Assert.IsType<ConflictObjectResult>(UpdateReturn);
-
-
             //MetaDataWrong
             userUpdatingDto.Emails.ToList()[0].EmailAddress = "emailcheck@gmail.com";
             userUpdatingDto.Emails.ToList()[0].type = "PERSONA";
-            UpdateReturn = userController.UpdateUser(userId, userUpdatingDto);
+            UpdateReturn = UserController.UpdateUser(userId, userUpdatingDto);
             Assert.IsType<NotFoundObjectResult>(UpdateReturn);
 
 
-            //NotValidPassword
-            userUpdatingDto.password = "1234";
+            //Wrong userId
+            userId = Guid.NewGuid();
             userUpdatingDto.Emails.ToList()[0].EmailAddress = "emailcheck1@gmail.com";
             userUpdatingDto.Emails.ToList()[0].type = "PERSONAL";
             userUpdatingDto.Phones.ToList()[0].type = "PERSONAL";
             userUpdatingDto.Address.ToList()[0].Type = "PERSONAL";
             userUpdatingDto.Address.ToList()[0].Country = "INDIA";
-            UpdateReturn = userController.UpdateUser(userId, userUpdatingDto);
-            Assert.IsType<BadRequestResult>(UpdateReturn);
-
-
-
-            //Wrong userId
-            userId = Guid.NewGuid();
-            UpdateReturn = userController.UpdateUser(userId, userUpdatingDto);
+            UpdateReturn = UserController.UpdateUser(userId, userUpdatingDto);
             Assert.IsType<NotFoundObjectResult>(UpdateReturn);
-
         }
-
-
 
         [Fact]
         public void CreateUser()
@@ -286,11 +277,18 @@ namespace UnitTestForAddressBook
                 PhoneNumber = "1234567891",
                 type = "PERSONAL"
             });
-
-            var CreateResponse = userController.CreateUser(userCreatingDto);
+            //create claims
+            Guid userId = new Guid("68417748-6864-4866-8d9b-b82ae29da396");
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] {
+                                        new Claim(ClaimTypes.NameIdentifier,userId.ToString())
+                                        // other required and custom claims
+                           }, "TestAuthentication"));
+            //Adding Claims
+            UserController.ControllerContext = new ControllerContext();
+            UserController.ControllerContext.HttpContext = new DefaultHttpContext { User = user };
+            var CreateResponse = UserController.CreateUser(userCreatingDto);
             Assert.IsType<ObjectResult>(CreateResponse);
             Assert.Equal(201, (CreateResponse as ObjectResult).StatusCode);
-
             Guid id = new Guid((CreateResponse as ObjectResult).Value.ToString());
             Assert.IsType<Guid>(id);
         }

@@ -9,9 +9,13 @@ namespace NoteBookAPI.Models
 {
     public class AddressDto
     {
-
+        ///<summary>
+        ///address Id
+        ///</summary>
         public Guid Id { get; set; }
-
+        ///<summary>
+        ///user id
+        ///</summary>
         public Guid UserId { get; set; }
 
         ///<summary>

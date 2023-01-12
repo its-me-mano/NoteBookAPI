@@ -1,31 +1,22 @@
 ﻿using NoteBookAPI.Entities.Model;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
 
 namespace NoteBookAPI.Entities
 {
-    public class RefSet 
+    [DataContract]
+    public class RefSet : BaseModel 
     {
         ///<summary>
         /// Id of the Refset 
         ///</summary>
-        [Required]  
+        [Required]
+        [DataMember(Name = "key")]
         public string Key { get; set; }
-
-        ///<summary>
-        /// refset key
-        ///</summary>
-        [Key]
-        public Guid Id { get; set; }
-
         ///<summary>
         /// description of the refset key 
         ///</summary>
+        [DataMember(Name = "description")]
         public string Description { get; set; }
-
     }
 }

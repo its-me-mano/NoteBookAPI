@@ -1,24 +1,16 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-
-using Microsoft.Extensions.Configuration;
-
 using NoteBookAPI.Models;
-using NoteBookAPI.Services;
 using System;
-
 using System.IO;
-
-using System.Threading.Tasks;
-
 using Microsoft.AspNetCore.Http;
 using NoteBookAPI.Entities;
 using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
+using NoteBookAPI.Contracts;
 
 namespace NoteBookAPI.Controllers
 {
@@ -27,22 +19,17 @@ namespace NoteBookAPI.Controllers
 
     public class FileController : ControllerBase
     {
-
-
-        private readonly IUserDetailRepository _userDetailRepository;
+        private readonly IFileRepositories _fileRepository;
         private readonly IMapper _mapper;
-        private readonly IService _service;
+        private readonly IFileServices _service;
         private readonly ILogger _logger;
-
-
-        public FileController(IUserDetailRepository UserDetailRepositary, IMapper mapper,IService service,ILogger logger)
+        public FileController(IFileRepositories FileRepository, IMapper mapper,IFileServices service,ILogger logger)
         {
-            _userDetailRepository = UserDetailRepositary ?? throw new ArgumentNullException(nameof(UserDetailRepositary));
+            _fileRepository = FileRepository ?? throw new ArgumentNullException(nameof(FileRepository));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _service = service ?? throw new ArgumentNullException(nameof(service));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-
         /// <summary>
         ///File Upload API
         /// </summary>
@@ -69,37 +56,26 @@ namespace NoteBookAPI.Controllers
                 return BadRequest();
             }
             AssetDtoCreating imageCreateDto = new AssetDtoCreating();
-      
-                imageCreateDto.File = _service.ImageToString(file);
-                Asset ImageEntity = _mapper.Map<Asset>(imageCreateDto);
-                ImageEntity.UserId = userId;
+            imageCreateDto.File = _service.ImageToString(file);
+            Asset ImageEntity = _mapper.Map<Asset>(imageCreateDto);
+            ImageEntity.UserId = userId;
             string LoggedUserId;
             if (String.IsNullOrEmpty(ClaimTypes.NameIdentifier))
             {
                 LoggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             }
             else {
-                 LoggedUserId = "6ebb437a-03e5-4ebf-83fa-652f548368f2";
-                
+                 LoggedUserId = "6ebb437a-03e5-4ebf-83fa-652f548368f2";  
             }
             ImageEntity.CreateBy = new Guid(LoggedUserId);
             ImageEntity.DateCreated = DateTime.Now;
-
-
-                _userDetailRepository.uploadImage(ImageEntity);
-                imageCreateDto.Id = ImageEntity.Id;
-                 imageCreateDto.UserId = userId;
-                _userDetailRepository.Save();
-                _logger.LogInformation("File uploaded successfully");
-              
-
-                return new JsonResult(ImageEntity);
+            _fileRepository.uploadImage(ImageEntity);
+            imageCreateDto.Id = ImageEntity.Id;
+            imageCreateDto.UserId = userId;
+            _fileRepository.Save();
+            _logger.LogInformation("File uploaded successfully");
+            return new JsonResult(ImageEntity);
             }
-            
-        
-
-
         /// <summary>
         ///Download API
         /// </summary>
@@ -122,16 +98,13 @@ namespace NoteBookAPI.Controllers
             if (assetId == null)
             {
                 _logger.LogError("AssetId is null");
-                return BadRequest();
+                return BadRequest("AssetId is null");
             }
-            Asset Image64 = _userDetailRepository.GetImage(Guid.Parse(assetId));
-
+            Asset Image64 = _fileRepository.GetImage(Guid.Parse(assetId));
             MemoryStream outputStream = new MemoryStream(Convert.FromBase64String(Image64.File));
-
             byte[] bytesInStream = outputStream.ToArray();
             _logger.LogInformation("File downloaded successfully");
             return File(bytesInStream, "APPLICATION/octnet-stream");
-
         }
 
 

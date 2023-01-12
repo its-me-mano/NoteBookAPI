@@ -7,12 +7,25 @@ namespace NoteBookAPI.Helper
 {
     public class PageList<T>:List<T>
     {
+        ///<summary>
+        ///CurrentPage
+        ///</summary>
         public int CurrentPage { get; set; }
+        ///<summary>
+        ///TotalPages
+        ///</summary>
         public int TotalPages { get; set; }
+        ///<summary>
+        ///PageSize
+        ///</summary>
         public int PageSize { get; set; }
+        ///<summary>
+        ///Total count of users
+        ///</summary>
         public int TotalCount { get; set; }
-        public bool HasPrevious => (CurrentPage > 1);
-        public bool HasNext => (CurrentPage < TotalPages);
+        ///<summary>
+        ///PageListing
+        ///</summary>
         public PageList(List<T> items, int totalCount,int currentPage,int pageSize) {
             CurrentPage = currentPage;
             TotalCount = totalCount;
@@ -20,7 +33,9 @@ namespace NoteBookAPI.Helper
             TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
             AddRange(items);
         }
-
+        ///<summary>
+        ///Setpaging
+        ///</summary>
         public static PageList<T> Create(IQueryable<T> source, int pageNumber, int pageSize) {
             int count = source.Count();
             List<T> items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();

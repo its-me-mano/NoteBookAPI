@@ -8,8 +8,11 @@ using System.Threading.Tasks;
 
 namespace NoteBookAPI.Models
 {
-    public class AssetUpdateDto : Entities.Dto.BaseModelDto
+    public class AssetUpdateDto : BaseModelDto
     {
+        ///<summary>
+        ///Asset Id
+        ///</summary>
         [JsonProperty(PropertyName = "id")]
         public Guid Id { get; set; }
     }
