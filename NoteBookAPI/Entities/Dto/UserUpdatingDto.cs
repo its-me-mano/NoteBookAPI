@@ -31,7 +31,7 @@ namespace NoteBookAPI.Models
         ///list of address
         ///</summary>
         [Required]
-        [JsonProperty(PropertyName = "address")]
+        [JsonProperty(PropertyName = "addresses")]
         public ICollection<AddressUpdatingDto> Address { get; set; } = new List<AddressUpdatingDto>();
         ///<summary>
         ///list of email 
