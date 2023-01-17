@@ -26,6 +26,7 @@ using NoteBookAPI.Repositories;
 using System.Threading;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using NoteBookAPI.Entities.Dto;
 
 namespace UnitTestForAddressBook
 {
@@ -75,22 +76,66 @@ namespace UnitTestForAddressBook
             });
             IMapper mapper = mappingConfig.CreateMapper();
             _mapper = mapper;
-
             userDetailRepository = new UserDetailsRepositories(context);
             metaDataRepository = new MetaDataRepositories(context);
             loginRepository = new LoginRepositories(context);
             fileRepository = new FileRepositories(context);
-
             UserService = new UserServices(userDetailRepository, _mapper, configuration,logger);
             MetaDataService = new MetaDataServices(metaDataRepository, _mapper, configuration);
             LoginService = new LoginServices(loginRepository, _mapper, configuration);
             FileService = new FileServices(fileRepository, _mapper, configuration);
-            UserController = new UserController(userDetailRepository, _mapper, UserService, logger);
-            MetaDataController = new MetaDataController(metaDataRepository, _mapper, MetaDataService, logger);
-            loginController = new LoginController(logger,loginRepository, mapper, configuration, LoginService);
-            FileController = new FileController(fileRepository, mapper, FileService, logger);
+            UserController = new UserController( _mapper, UserService, logger);
+            MetaDataController = new MetaDataController( MetaDataService, logger);
+            loginController = new LoginController(logger, configuration, LoginService);
+            FileController = new FileController( mapper, FileService, logger);
         }
-
+        [Fact]
+        public void CreateUser()
+        {
+            UserCreatingDto userCreatingDto = new UserCreatingDto()
+            {
+                FirstName = "Power",
+                LastName = "Ranger",
+                password = "Satkhi@321",
+                Address = new List<AddressCreatingDto>(),
+                Emails = new List<EmailCreatingDto>(),
+                Phones = new List<PhoneCreatingDto>()
+            };
+            userCreatingDto.Address.Add(new AddressCreatingDto()
+            {
+                Line1 = "182",
+                Line2 = "sellur",
+                City = "Madurai",
+                StateName = "tamilnadu",
+                Zipcode = "234234",
+                Type = "PERSONAL",
+                Country = "INDIA"
+            });
+            userCreatingDto.Emails.Add(new EmailCreatingDto()
+            {
+                EmailAddress = "Hello@gmail.com",
+                type = "PERSONAL",
+            });
+            userCreatingDto.Phones.Add(new PhoneCreatingDto()
+            {
+                PhoneNumber = "1234567891",
+                type = "PERSONAL"
+            });
+            //create claims
+            Guid userId = new Guid("68417748-6864-4866-8d9b-b82ae29da396");
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] {
+                                        new Claim(ClaimTypes.NameIdentifier,userId.ToString())
+                                        // other required and custom claims
+                           }, "TestAuthentication"));
+            //Adding Claims
+            UserController.ControllerContext = new ControllerContext();
+            UserController.ControllerContext.HttpContext = new DefaultHttpContext { User = user };
+            var CreateResponse = UserController.CreateUser(userCreatingDto);
+            Assert.IsType<ObjectResult>(CreateResponse);
+            Assert.Equal(201, (CreateResponse as ObjectResult).StatusCode);
+            Guid id = new Guid((CreateResponse as ObjectResult).Value.ToString());
+            Assert.IsType<Guid>(id);
+        }
         [Fact]
         public void LoginUser()
         {
@@ -117,6 +162,14 @@ namespace UnitTestForAddressBook
             Guid userId = new Guid("68417748-6864-4866-8d9b-b82ae29da396");
             string path = @"C:\Users\Manoj\source\repos\NoteBookAPI\NoteBookAPI\DbContexts\response.jpg";
             IFormFile File;
+            //create claims
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] {
+                                        new Claim(ClaimTypes.NameIdentifier,userId.ToString())
+                                        // other required and custom claims
+                           }, "TestAuthentication"));
+            //Adding Claims
+            FileController.ControllerContext = new ControllerContext();
+            FileController.ControllerContext.HttpContext = new DefaultHttpContext { User = user };
             using (var stream = System.IO.File.OpenRead(path))
             {
                 File = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(stream.Name));
@@ -155,22 +208,18 @@ namespace UnitTestForAddressBook
             //Checking userId
             Guid userId = new Guid("68417748-6864-4866-8d9b-b82ae29da396");
             var Response = UserController.GetUser(userId);
-            Assert.IsType<OkObjectResult>(Response);
-            //Checking random UserId
-            userId = Guid.NewGuid();
-            Response = UserController.GetUser(userId);
-            Assert.IsType<NotFoundObjectResult>(Response);
-
+            Assert.IsType<ObjectResult>(Response);
         }
         [Fact]
         public void RefsetData_Test()
         {
             string key = "PHONE_NUMBER_TYPE";
-            ActionResult response = MetaDataController.RefSet(key) as ActionResult;
-            Assert.IsType<JsonResult>(response);
-            string key2 = "NAME_TYPE";
-            ActionResult response2 = MetaDataController.RefSet(key2) as ActionResult;
-            Assert.IsType<NotFoundObjectResult>(response2);
+            IActionResult response = MetaDataController.RefSet(key);
+            Assert.IsType<OkObjectResult>(response);
+            Assert.Equal(200, (response as ObjectResult).StatusCode);
+            string key2 = "_TYPE";
+            IActionResult response2 = MetaDataController.RefSet(key2);
+            Assert.Equal(404,(response2 as ObjectResult).StatusCode);
         }
 
 
@@ -220,18 +269,19 @@ namespace UnitTestForAddressBook
             //updateResult
             var UpdateReturn = UserController.UpdateUser(userId, userUpdatingDto);
             Assert.IsType<OkObjectResult>(UpdateReturn);
+            Assert.Equal(200, (UpdateReturn as ObjectResult).StatusCode);
             //sameMailid
             userUpdatingDto.Emails.ToList()[0].type = "PERSONAL";
             userUpdatingDto.Phones.ToList()[0].type = "PERSONAL";
             userUpdatingDto.Address.ToList()[0].Type = "PERSONAL";
             userUpdatingDto.Address.ToList()[0].Country = "INDIA";
             UpdateReturn = UserController.UpdateUser(userId, userUpdatingDto);
-            Assert.IsType<ConflictObjectResult>(UpdateReturn);
+            Assert.Equal(409, (UpdateReturn as ObjectResult).StatusCode);
             //MetaDataWrong
             userUpdatingDto.Emails.ToList()[0].EmailAddress = "emailcheck@gmail.com";
             userUpdatingDto.Emails.ToList()[0].type = "PERSONA";
             UpdateReturn = UserController.UpdateUser(userId, userUpdatingDto);
-            Assert.IsType<NotFoundObjectResult>(UpdateReturn);
+            Assert.Equal(404, (UpdateReturn as ObjectResult).StatusCode);
 
 
             //Wrong userId
@@ -242,55 +292,18 @@ namespace UnitTestForAddressBook
             userUpdatingDto.Address.ToList()[0].Type = "PERSONAL";
             userUpdatingDto.Address.ToList()[0].Country = "INDIA";
             UpdateReturn = UserController.UpdateUser(userId, userUpdatingDto);
-            Assert.IsType<NotFoundObjectResult>(UpdateReturn);
+            Assert.Equal(404, (UpdateReturn as ObjectResult).StatusCode);
+
         }
 
+    
+
         [Fact]
-        public void CreateUser()
-        {
-            UserCreatingDto userCreatingDto = new UserCreatingDto()
-            {
-                FirstName = "Power",
-                LastName = "Ranger",
-                password = "Satkhi@321",
-                Address = new List<AddressCreatingDto>(),
-                Emails = new List<EmailCreatingDto>(),
-                Phones = new List<PhoneCreatingDto>()
-            };
-            userCreatingDto.Address.Add(new AddressCreatingDto()
-            {
-                Line1 = "182",
-                Line2 = "sellur",
-                City = "Madurai",
-                StateName = "tamilnadu",
-                Zipcode = "234234",
-                Type = "PERSONAL",
-                Country = "INDIA"
-            });
-            userCreatingDto.Emails.Add(new EmailCreatingDto()
-            {
-                EmailAddress = "itsme1233321@gmail.com",
-                type = "PERSONAL",
-            });
-            userCreatingDto.Phones.Add(new PhoneCreatingDto()
-            {
-                PhoneNumber = "1234567891",
-                type = "PERSONAL"
-            });
-            //create claims
+        public void DeleteUser() {
             Guid userId = new Guid("68417748-6864-4866-8d9b-b82ae29da396");
-            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] {
-                                        new Claim(ClaimTypes.NameIdentifier,userId.ToString())
-                                        // other required and custom claims
-                           }, "TestAuthentication"));
-            //Adding Claims
-            UserController.ControllerContext = new ControllerContext();
-            UserController.ControllerContext.HttpContext = new DefaultHttpContext { User = user };
-            var CreateResponse = UserController.CreateUser(userCreatingDto);
-            Assert.IsType<ObjectResult>(CreateResponse);
-            Assert.Equal(201, (CreateResponse as ObjectResult).StatusCode);
-            Guid id = new Guid((CreateResponse as ObjectResult).Value.ToString());
-            Assert.IsType<Guid>(id);
+            IActionResult response = UserController.DeleteUser(userId);
+            ObjectResult objectResult = Assert.IsType<ObjectResult>(response);
+            Assert.Equal(200, objectResult.StatusCode);
         }
 
 

@@ -19,13 +19,12 @@ namespace NoteBookAPI.Controllers
 
     public class FileController : ControllerBase
     {
-        private readonly IFileRepositories _fileRepository;
+
         private readonly IMapper _mapper;
         private readonly IFileServices _service;
         private readonly ILogger _logger;
-        public FileController(IFileRepositories FileRepository, IMapper mapper,IFileServices service,ILogger logger)
+        public FileController(IMapper mapper,IFileServices service,ILogger logger)
         {
-            _fileRepository = FileRepository ?? throw new ArgumentNullException(nameof(FileRepository));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _service = service ?? throw new ArgumentNullException(nameof(service));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -49,32 +48,25 @@ namespace NoteBookAPI.Controllers
         [HttpPost("uploadFile/{user-Id}")]
         public IActionResult UploadFiles([Required][FromRoute(Name ="user-Id")]Guid userId, [FromForm] IFormFile file)
         {
+            string LoggedUserId= User.FindFirstValue(ClaimTypes.NameIdentifier); 
             _logger.LogInformation("Uploading file is processing");
             if (file.Length < 0) 
             {
                 _logger.LogError("File is not there");
-                return BadRequest();
+                return StatusCode(400, _service.ErrorToReturn("400", "There is no file"));
             }
             AssetDtoCreating imageCreateDto = new AssetDtoCreating();
             imageCreateDto.File = _service.ImageToString(file);
             Asset ImageEntity = _mapper.Map<Asset>(imageCreateDto);
             ImageEntity.UserId = userId;
-            string LoggedUserId;
-            if (String.IsNullOrEmpty(ClaimTypes.NameIdentifier))
-            {
-                LoggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            }
-            else {
-                 LoggedUserId = "6ebb437a-03e5-4ebf-83fa-652f548368f2";  
-            }
             ImageEntity.CreateBy = new Guid(LoggedUserId);
             ImageEntity.DateCreated = DateTime.Now;
-            _fileRepository.uploadImage(ImageEntity);
+            ImageEntity.File = imageCreateDto.File;
+            _service.SaveImage(ImageEntity); 
             imageCreateDto.Id = ImageEntity.Id;
-            imageCreateDto.UserId = userId;
-            _fileRepository.Save();
+            imageCreateDto.UserId = userId;          
             _logger.LogInformation("File uploaded successfully");
-            return new JsonResult(ImageEntity);
+            return new JsonResult(imageCreateDto);
             }
         /// <summary>
         ///Download API
@@ -91,16 +83,16 @@ namespace NoteBookAPI.Controllers
         [SwaggerResponse(statusCode: 401, "The user is not authorized")]
         [SwaggerResponse(statusCode: 500, "Internal Server Error")]
         [Authorize]
-        [HttpGet("{asset-Id}")]
-        public IActionResult DownloadFile([Required][FromRoute(Name ="asset-Id")]string assetId)
+        [HttpGet("{asset-id}")]
+        public IActionResult DownloadFile([Required][FromRoute(Name ="asset-id")]string assetId)
         {
             _logger.LogInformation("Downloading the image initiated");
             if (assetId == null)
             {
                 _logger.LogError("AssetId is null");
-                return BadRequest("AssetId is null");
+                return StatusCode(400, _service.ErrorToReturn("400", "AssetId is null"));
             }
-            Asset Image64 = _fileRepository.GetImage(Guid.Parse(assetId));
+            Asset Image64 = _service.GetImage(assetId);    
             MemoryStream outputStream = new MemoryStream(Convert.FromBase64String(Image64.File));
             byte[] bytesInStream = outputStream.ToArray();
             _logger.LogInformation("File downloaded successfully");

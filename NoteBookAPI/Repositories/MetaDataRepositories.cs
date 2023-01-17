@@ -4,7 +4,6 @@ using NoteBookAPI.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace NoteBookAPI.Repositories
 {
@@ -19,9 +18,9 @@ namespace NoteBookAPI.Repositories
         /// get the refset
         ///</summary>
         ///<param name="type"></param>
-        public RefSet TypeFinder(string type)
+        public RefTerm TypeFinder(string type)
         {
-            return _context.RefSets.FirstOrDefault(b => b.Key == type);
+            return _context.RefTerms.FirstOrDefault(b => b.Key == type);
         }
         ///<summary>
         /// Guid list of RefSet
@@ -29,21 +28,20 @@ namespace NoteBookAPI.Repositories
         ///<param name="id"></param>
         public bool metaExist(string type)
         {
-            return _context.RefSets.Any(a => a.Key == type);
+            return _context.RefTerms.Any(a => a.Key == type);
         }
         ///<summary>
         /// Return the List of RefSet
         ///</summary>
         ///<param name="items"></param>
-        public IEnumerable<Guid> getRefSetGroup(Guid id)
+        public IEnumerable<Guid> getRefTermGroup(Guid id)
         {
             List<Guid> Group = new List<Guid>();
             foreach (SetRefTerm item in _context.SetRefTerms)
             {
-                if (item.ReftermId.Equals(id))
+                if (item.RefSetid.Equals(id))
                 {
-
-                    Group.Add(item.RefSetid);
+                    Group.Add(item.ReftermId);
                 }
             }
             return Group;
@@ -52,18 +50,17 @@ namespace NoteBookAPI.Repositories
         /// Get the RefTerm based on Refterm Name  
         ///</summary>
         ///<param name="name"></param>
-        public IEnumerable<RefSet> getRefSet(IEnumerable<Guid> items)
+        public IEnumerable<RefTerm> getRefTerm(IEnumerable<Guid> items)
         {
-
-            return _context.RefSets.Where(a => items.Contains(a.Id));
+            return _context.RefTerms.Where(a => items.Contains(a.Id));
         }
         ///<summary>
         /// check the metadata exist or not 
         ///</summary>
         ///<param name="type"></param>
-        public RefTerm getRefTerm(string name)
+        public RefSet getRefSet(string name)
         {
-            return (_context.RetTerms.FirstOrDefault(a => a.Key == name));
+            return (_context.RefSets.FirstOrDefault(a => a.Key == name));
         }
     }
 }

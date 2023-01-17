@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NoteBookAPI.DbContexts;
 
 namespace NoteBookAPI.Migrations
 {
     [DbContext(typeof(UserDetailsContext))]
-    partial class UserDetailsContextModelSnapshot : ModelSnapshot
+    [Migration("20230114052703_mano")]
+    partial class mano
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,7 +76,7 @@ namespace NoteBookAPI.Migrations
                             City = "madurai",
                             Country = new Guid("1f1f245d-c63b-42f6-b592-49b5b16bf861"),
                             CreateBy = new Guid("f46f9dba-8a1c-4dd9-a8ea-c572a83be0be"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(363),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 936, DateTimeKind.Local).AddTicks(4510),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Line1 = "hello",
                             Line2 = "solunga",
@@ -90,7 +92,7 @@ namespace NoteBookAPI.Migrations
                             City = "madurai",
                             Country = new Guid("1f1f245d-c63b-42f6-b592-49b5b16bf861"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(455),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 936, DateTimeKind.Local).AddTicks(4608),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Line1 = "hello",
                             Line2 = "solunga",
@@ -172,7 +174,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("d019119e-245b-45d2-93df-b4cbbdfeac9f"),
                             CreateBy = new Guid("f46f9dba-8a1c-4dd9-a8ea-c572a83be0be"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(2797),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 936, DateTimeKind.Local).AddTicks(6910),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EmailAddress = "itsmemano123@gmail.com",
                             TypeId = new Guid("abad70c5-11db-42f8-9e3a-487023f1b1cc"),
@@ -183,7 +185,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("8c50f920-4b3a-4565-a8b6-0b635b429a98"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(2850),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 936, DateTimeKind.Local).AddTicks(6961),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EmailAddress = "itsmemano@gmail.com",
                             TypeId = new Guid("abad70c5-11db-42f8-9e3a-487023f1b1cc"),
@@ -230,7 +232,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("00793011-a986-49f0-879b-86023edaff46"),
                             CreateBy = new Guid("f46f9dba-8a1c-4dd9-a8ea-c572a83be0be"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(1625),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 936, DateTimeKind.Local).AddTicks(5773),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PhoneNumber = "8925250061",
                             TypeId = new Guid("abad70c5-11db-42f8-9e3a-487023f1b1cc"),
@@ -241,7 +243,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("8c50f920-4b3a-4565-a8b6-0b635b429a98"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(1670),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 936, DateTimeKind.Local).AddTicks(5816),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PhoneNumber = "9488977667",
                             TypeId = new Guid("abad70c5-11db-42f8-9e3a-487023f1b1cc"),
@@ -284,7 +286,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("3bbd0a04-40d0-44fb-ba4d-c25d0926d7df"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(5742),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 936, DateTimeKind.Local).AddTicks(9622),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = @"Types of addresses",
                             Key = "ADDRESS_TYPE",
@@ -294,7 +296,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("a447a151-130e-46df-917b-d09976d2ebb5"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(6045),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 936, DateTimeKind.Local).AddTicks(9862),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = @"Types of phonenumber",
                             Key = "PHONE_NUMBER_TYPE",
@@ -304,7 +306,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("66ce5b88-684d-4a82-96b6-d9c8bb751687"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(6086),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 936, DateTimeKind.Local).AddTicks(9901),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = @"Types of emails",
                             Key = "EMAIL_ADDRESS_TYPE",
@@ -314,7 +316,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("a673bec7-aae1-4cca-b459-fb5d5bbfe3e1"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(6114),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 936, DateTimeKind.Local).AddTicks(9924),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = @"Types of countries",
                             Key = "COUNTRY",
@@ -356,7 +358,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("abad70c5-11db-42f8-9e3a-487023f1b1cc"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(7572),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 937, DateTimeKind.Local).AddTicks(1404),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = @"It is used to the detail mentioned all about personal",
                             Key = "PERSONAL",
@@ -366,7 +368,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("0d80e411-064c-4025-abd3-b10373c5b0c7"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(7799),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 937, DateTimeKind.Local).AddTicks(1619),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = @"The detail mentioned is all about Work based",
                             Key = "WORK",
@@ -376,7 +378,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("1f1f245d-c63b-42f6-b592-49b5b16bf861"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(7833),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 937, DateTimeKind.Local).AddTicks(1653),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = @"Country",
                             Key = "INDIA",
@@ -386,7 +388,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("e7c0cab2-367b-4b60-805f-8b20cdadc599"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(7855),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 937, DateTimeKind.Local).AddTicks(1674),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = @"Country",
                             Key = "UNITED_STATES",
@@ -396,7 +398,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("7b135772-658f-4bdf-a01c-cedba350cb41"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(7875),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 937, DateTimeKind.Local).AddTicks(1693),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = @"Alternate number",
                             Key = "ALTERNATE",
@@ -437,90 +439,90 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("d2ffc955-b24b-411a-8cdb-26516bcfe3db"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(9535),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 937, DateTimeKind.Local).AddTicks(3253),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            RefSetid = new Guid("3bbd0a04-40d0-44fb-ba4d-c25d0926d7df"),
-                            ReftermId = new Guid("abad70c5-11db-42f8-9e3a-487023f1b1cc"),
+                            RefSetid = new Guid("abad70c5-11db-42f8-9e3a-487023f1b1cc"),
+                            ReftermId = new Guid("3bbd0a04-40d0-44fb-ba4d-c25d0926d7df"),
                             UpdateBy = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("7e9c9d23-7728-4808-975d-d07b42d8e039"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(9765),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 937, DateTimeKind.Local).AddTicks(3478),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            RefSetid = new Guid("3bbd0a04-40d0-44fb-ba4d-c25d0926d7df"),
-                            ReftermId = new Guid("0d80e411-064c-4025-abd3-b10373c5b0c7"),
+                            RefSetid = new Guid("0d80e411-064c-4025-abd3-b10373c5b0c7"),
+                            ReftermId = new Guid("3bbd0a04-40d0-44fb-ba4d-c25d0926d7df"),
                             UpdateBy = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("0bd3c11f-c1c5-48f5-8ece-86cfeb5ede88"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(9840),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 937, DateTimeKind.Local).AddTicks(3514),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            RefSetid = new Guid("a447a151-130e-46df-917b-d09976d2ebb5"),
-                            ReftermId = new Guid("abad70c5-11db-42f8-9e3a-487023f1b1cc"),
+                            RefSetid = new Guid("abad70c5-11db-42f8-9e3a-487023f1b1cc"),
+                            ReftermId = new Guid("a447a151-130e-46df-917b-d09976d2ebb5"),
                             UpdateBy = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("a1c2cd8c-aae4-463d-b873-841c40f4bf86"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(9867),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 937, DateTimeKind.Local).AddTicks(3538),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            RefSetid = new Guid("a447a151-130e-46df-917b-d09976d2ebb5"),
-                            ReftermId = new Guid("0d80e411-064c-4025-abd3-b10373c5b0c7"),
+                            RefSetid = new Guid("0d80e411-064c-4025-abd3-b10373c5b0c7"),
+                            ReftermId = new Guid("a447a151-130e-46df-917b-d09976d2ebb5"),
                             UpdateBy = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("a0229113-f803-4403-ba10-b0698d0cbbbe"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(9890),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 937, DateTimeKind.Local).AddTicks(3559),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            RefSetid = new Guid("a447a151-130e-46df-917b-d09976d2ebb5"),
-                            ReftermId = new Guid("7b135772-658f-4bdf-a01c-cedba350cb41"),
+                            RefSetid = new Guid("7b135772-658f-4bdf-a01c-cedba350cb41"),
+                            ReftermId = new Guid("a447a151-130e-46df-917b-d09976d2ebb5"),
                             UpdateBy = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("2aa77699-21f7-442a-8b0d-b6e3f6b9211d"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(9915),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 937, DateTimeKind.Local).AddTicks(3585),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            RefSetid = new Guid("66ce5b88-684d-4a82-96b6-d9c8bb751687"),
-                            ReftermId = new Guid("abad70c5-11db-42f8-9e3a-487023f1b1cc"),
+                            RefSetid = new Guid("abad70c5-11db-42f8-9e3a-487023f1b1cc"),
+                            ReftermId = new Guid("66ce5b88-684d-4a82-96b6-d9c8bb751687"),
                             UpdateBy = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("173487fc-5809-4d64-8a2c-a23403127e30"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(9937),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 937, DateTimeKind.Local).AddTicks(3607),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            RefSetid = new Guid("66ce5b88-684d-4a82-96b6-d9c8bb751687"),
-                            ReftermId = new Guid("0d80e411-064c-4025-abd3-b10373c5b0c7"),
+                            RefSetid = new Guid("0d80e411-064c-4025-abd3-b10373c5b0c7"),
+                            ReftermId = new Guid("66ce5b88-684d-4a82-96b6-d9c8bb751687"),
                             UpdateBy = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("5d14d241-437e-4819-ab01-58563d95c73c"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(9959),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 937, DateTimeKind.Local).AddTicks(3664),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            RefSetid = new Guid("a673bec7-aae1-4cca-b459-fb5d5bbfe3e1"),
-                            ReftermId = new Guid("1f1f245d-c63b-42f6-b592-49b5b16bf861"),
+                            RefSetid = new Guid("1f1f245d-c63b-42f6-b592-49b5b16bf861"),
+                            ReftermId = new Guid("a673bec7-aae1-4cca-b459-fb5d5bbfe3e1"),
                             UpdateBy = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = new Guid("d1f520f4-976d-4ec7-a523-24985873a91b"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 388, DateTimeKind.Local).AddTicks(9981),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 937, DateTimeKind.Local).AddTicks(3690),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            RefSetid = new Guid("a673bec7-aae1-4cca-b459-fb5d5bbfe3e1"),
-                            ReftermId = new Guid("e7c0cab2-367b-4b60-805f-8b20cdadc599"),
+                            RefSetid = new Guid("e7c0cab2-367b-4b60-805f-8b20cdadc599"),
+                            ReftermId = new Guid("a673bec7-aae1-4cca-b459-fb5d5bbfe3e1"),
                             UpdateBy = new Guid("00000000-0000-0000-0000-000000000000")
                         });
                 });
@@ -563,7 +565,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("f46f9dba-8a1c-4dd9-a8ea-c572a83be0be"),
                             CreateBy = new Guid("f46f9dba-8a1c-4dd9-a8ea-c572a83be0be"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 386, DateTimeKind.Local).AddTicks(3606),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 934, DateTimeKind.Local).AddTicks(8255),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FirstName = "Sakthi",
                             LastName = "Vel",
@@ -574,7 +576,7 @@ namespace NoteBookAPI.Migrations
                         {
                             Id = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
                             CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396"),
-                            DateCreated = new DateTime(2023, 1, 14, 11, 3, 34, 386, DateTimeKind.Local).AddTicks(8564),
+                            DateCreated = new DateTime(2023, 1, 14, 10, 57, 2, 935, DateTimeKind.Local).AddTicks(3480),
                             DateUpdated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FirstName = "Manoj",
                             LastName = "Kumar",

@@ -1,19 +1,14 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using NoteBookAPI.Entities;
+using NoteBookAPI.Entities.Dto;
 using NoteBookAPI.Helper;
 using NoteBookAPI.Models;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.IO;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 namespace NoteBookAPI.Services
 {
     public class UserServices : IUserServices
@@ -32,6 +27,35 @@ namespace NoteBookAPI.Services
         }
 
         ///<summary>
+        ///Adding the appdning the values email,address
+        ///</summary>
+        /// <param name="userId"></param>
+        /// <param name="userFromRepo"></param>
+        public void AppendingValueForUpdate(User userFromRepo,Guid userId,UserUpdatingDto user) {
+            
+            List<Address> AddressGuid = userDetailRepository.GetAddressIds(userId).ToList();
+            int i = 0;
+            foreach (var item in userFromRepo.Address) {
+                item.Id = AddressGuid[i++].Id;
+            }
+            i = 0;
+            List<Email> EmailGuid = userDetailRepository.GetEmailIds(userId).ToList();
+            foreach (var item in userFromRepo.Emails)
+            {
+                item.Id = EmailGuid[i++].Id;
+            }
+            i = 0;
+            List<Phone> PhoneGuid = userDetailRepository.GetPhoneIds(userId).ToList();
+            foreach (var item in userFromRepo.Phones)
+            {
+                item.Id = PhoneGuid[i++].Id;
+            }
+            mapper.Map(user, userFromRepo);
+            userDetailRepository.UpdateUser(userFromRepo, userId);
+            userDetailRepository.Save();
+        }
+
+        ///<summary>
         ///get the logged user 
         ///</summary>
         ///<param name="user"></param>
@@ -40,6 +64,89 @@ namespace NoteBookAPI.Services
              if (!String.IsNullOrEmpty(ClaimTypes.NameIdentifier))
                  LoggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
              return LoggedUserId;
+        }
+        /// <summary>
+        /// Get the count of the users
+        /// </summary>
+        public int GetCount() {
+            return userDetailRepository.GetCount();
+        }
+        /// <summary>
+        /// Get the users
+        /// </summary>
+        /// <param name="userResourceParameter"></param>
+        public PageList<User> GetUsers(UserResourceParameter userResourceParameter) {
+            return userDetailRepository.GetUsers(userResourceParameter);
+        }
+        /// <summary>
+        /// Get the particular user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public User GetUser(Guid userId)
+        {
+            return userDetailRepository.GetUser(userId); 
+        }
+        /// <summary>
+        /// Delete the particular user
+        /// </summary>
+        /// <param name="userFromRepo"></param>
+        public void DeleteUser(User userFromRepo) {
+            userDetailRepository.DeleteUser(userFromRepo);
+            userDetailRepository.Save();
+        }
+        /// <summary>
+        /// SavetheCreateDto user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public UserDto SaveCreateUser(UserCreatingDto user) {
+           
+            user.DateCreated = DateTime.Now;
+            User userEntity = mapper.Map<User>(user);
+            userDetailRepository.AddUser(userEntity);
+            userDetailRepository.Save();
+          
+            return mapper.Map<UserDto>(userEntity);
+        }
+
+        /// <summary>
+        /// Does the user exist or not
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        public bool UserExists(Guid userId) {
+            return !userDetailRepository.UserExits(userId);
+        }
+        ///<summary>
+        ///Return Error in the format
+        ///</summary>
+        ///<param name="description"></param>
+        ///<param name="statuscode"></param>
+        public ErrorDto ErrorToReturn(string statuscode, string description) {
+            ErrorDto Response = new ErrorDto();
+            if (statuscode == "404")
+            {
+                Response.Message = "Not Found";
+            }
+            else if (statuscode == "400")
+            {
+                Response.Message = "Bad Request";
+            }
+            else if (statuscode == "401")
+            {
+                Response.Message = "Unauthorized";
+            }
+            else if (statuscode == "500")
+            {
+                Response.Message = "Internal server error";
+            }
+            else if (statuscode == "409") {
+                Response.Message = "Conflict";
+            }
+            Response.StatusCode = statuscode;
+            Response.Description = description;
+            return Response;
         }
         ///<summary>
         ///Update the userdetails  in the address,email,phone

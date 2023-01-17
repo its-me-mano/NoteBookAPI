@@ -16,7 +16,7 @@ namespace NoteBookAPI.DbContexts
         public DbSet<Phone> PhNumbers { get; set; }
         public DbSet<User> Users{ get; set; }
         public DbSet<RefSet> RefSets{ get; set; }
-        public DbSet<RefTerm> RetTerms { get; set; }
+        public DbSet<RefTerm> RefTerms { get; set; }
         public DbSet<SetRefTerm> SetRefTerms { get; set; }
         public DbSet<Asset> Assets { get; set; }
 
@@ -108,21 +108,21 @@ namespace NoteBookAPI.DbContexts
                 DateCreated = DateTime.Now
             });
 
-            string path = @"C:\Users\Manoj\source\repos\NoteBookAPI\NoteBookAPI\DbContexts\Refset.csv";
+            string path = @"C:\Users\Manoj\source\repos\NoteBookAPI\NoteBookAPI\DbContexts\RefTerm.csv";
             string ReadCSV = File.ReadAllText(path);
             foreach (string csvRow in ReadCSV.Split("\n")) {
                 if (!string.IsNullOrEmpty(csvRow)) {
                     string[] csvCols = csvRow.Split(",");
                     RefSet refSet = new RefSet();
-                    refSet.Id = Guid.Parse(csvCols[1].ToString());
-                    refSet.Key = csvCols[0].ToString();
+                    refSet.Id = Guid.Parse(csvCols[0].ToString());
+                    refSet.Key = csvCols[1].ToString();
                     refSet.Description = csvCols[2].ToString();
                     refSet.CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396");
                     refSet.DateCreated = DateTime.Now;
                     modelBuilder.Entity<RefSet>().HasData(refSet);
                 }
             }
-            string path1 = @"C:\Users\Manoj\source\repos\NoteBookAPI\NoteBookAPI\DbContexts\RefTerm.csv";
+            string path1 = @"C:\Users\Manoj\source\repos\NoteBookAPI\NoteBookAPI\DbContexts\RefSet.csv";
             string ReadCSV1 = File.ReadAllText(path1);
             foreach (string csvRow in ReadCSV1.Split("\n"))
             {
@@ -130,8 +130,8 @@ namespace NoteBookAPI.DbContexts
                 {
                     string[] csvCols = csvRow.Split(",");
                     RefTerm refTerm = new RefTerm();
-                    refTerm.Id = Guid.Parse(csvCols[0].ToString());
-                    refTerm.Key = csvCols[1].ToString();
+                    refTerm.Id = Guid.Parse(csvCols[1].ToString());
+                    refTerm.Key = csvCols[0].ToString();
                     refTerm.Description = csvCols[2].ToString();
                     refTerm.CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396");
                     refTerm.DateCreated = DateTime.Now;
@@ -148,8 +148,8 @@ namespace NoteBookAPI.DbContexts
                 {
                     string[] csvCols = csvRow.Split(",");
                     SetRefTerm setRefTerm = new SetRefTerm();
-                    setRefTerm.ReftermId = Guid.Parse(csvCols[0].ToString());
-                    setRefTerm.RefSetid = Guid.Parse(csvCols[1].ToString());
+                    setRefTerm.RefSetid = Guid.Parse(csvCols[0].ToString());
+                    setRefTerm.ReftermId = Guid.Parse(csvCols[1].ToString());
                     setRefTerm.Id = Guid.Parse(csvCols[2].ToString());
                     setRefTerm.CreateBy = new Guid("68417748-6864-4866-8d9b-b82ae29da396");
                     setRefTerm.DateCreated = DateTime.Now;

@@ -58,8 +58,8 @@ namespace NoteBookAPI.Profiles
             CreateMap<PhoneDto,Phone>().ReverseMap();
 
             //Refset
-            CreateMap<RefSetDto, RefSet>().ReverseMap();
-            CreateMap<MetaDataDto, RefTerm>();
+            CreateMap<RefTermDto, RefTerm>().ReverseMap(); 
+            CreateMap<MetaDataDto, RefSet>();
 
             //User
             CreateMap<UserCreatingDto, User>().ReverseMap();

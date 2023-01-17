@@ -50,15 +50,15 @@ namespace NoteBookAPI.Services
         ///<param name="type"></param>
         public bool metaExist(string type)
         {
-            return _context.RefSets.Any(a => a.Key == type);
+            return _context.RefTerms.Any(a => a.Key == type);
         }
         ///<summary>
         /// find the type of the Refset
         ///</summary>
         /// <param name="type"></param>
-        public RefSet TypeFinder(string type)
+        public RefTerm TypeFinder(string type)
         {
-            return _context.RefSets.FirstOrDefault(b => b.Key == type);
+            return _context.RefTerms.FirstOrDefault(b => b.Key == type);
         }
         ///<summary>
         ///delete the user

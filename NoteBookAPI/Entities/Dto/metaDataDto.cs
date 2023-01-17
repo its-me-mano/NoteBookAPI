@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace NoteBookAPI.Models
 {
     public class MetaDataDto
@@ -10,7 +7,7 @@ namespace NoteBookAPI.Models
         ///<summary>
         ///RefTerm Id
         ///</summary>
-        public Guid ReftermId { get; set; }
+        public Guid Id { get; set; }
         ///<summary>
         ///Type of the metaData
         ///</summary>
@@ -22,6 +19,6 @@ namespace NoteBookAPI.Models
         ///<summary>
         ///List of refsetDto
         ///</summary>
-        public ICollection<RefSetDto> RefSets { get; set; } = new List<RefSetDto>();
+        public ICollection<RefTermDto> RefTerms { get; set; } = new List<RefTermDto>();
     }
 }

@@ -1,4 +1,4 @@
-﻿using NoteBookAPI.Entities;
+﻿    using NoteBookAPI.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,24 +12,24 @@ namespace NoteBookAPI.Contracts
         /// get the refset
         ///</summary>
         ///<param name="type"></param>
-        RefSet TypeFinder(string type);
+        RefTerm TypeFinder(string type);
         ///<summary>
         /// Guid list of RefSet
         ///</summary>
         ///<param name="id"></param>
-        IEnumerable<Guid> getRefSetGroup(Guid id);
+        IEnumerable<Guid> getRefTermGroup(Guid id);
         ///<summary>
         /// Return the List of RefSet
         ///</summary>
         ///<param name="items"></param>
-        IEnumerable<RefSet> getRefSet(IEnumerable<Guid> items);
+        IEnumerable<RefTerm> getRefTerm(IEnumerable<Guid> items);
         ///<summary>
         /// Get the RefTerm based on Refterm Name  
         ///</summary>
         ///<param name="name"></param>
-        RefTerm getRefTerm(string name);
+        RefSet getRefSet(string name);
         ///<summary>
-        /// check the metadata exist or not 
+        /// check the metadata     exist or not 
         ///</summary>
         ///<param name="type"></param>
         bool metaExist(string type);

@@ -1,11 +1,6 @@
 ﻿using Newtonsoft.Json;
 using NoteBookAPI.Entities.Dto;
-using NoteBookAPI.Entities.Model;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace NoteBookAPI.Models
 {
@@ -17,11 +12,9 @@ namespace NoteBookAPI.Models
         [Required]
         [JsonProperty(PropertyName = "line1")]
         public string Line1 { get; set; }
-
         ///<summary>
         ///street line 2
         ///</summary>
-
         [JsonProperty(PropertyName = "line2")]
         public string Line2 { get; set; }
         ///<summary>

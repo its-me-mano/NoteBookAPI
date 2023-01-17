@@ -1,10 +1,6 @@
 ﻿using Newtonsoft.Json;
-using NoteBookAPI.Entities.Model;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace NoteBookAPI.Models
 {
@@ -32,20 +28,24 @@ namespace NoteBookAPI.Models
         ///list of address
         ///</summary>
         [Required]
+        [JsonProperty(PropertyName = "address")]
         public ICollection<AddressCreatingDto> Address { get; set; } = new List<AddressCreatingDto>();
         ///<summary>
         ///list of emails
         ///</summary>
         [Required]
+        [JsonProperty(PropertyName = "emails")]
         public ICollection<EmailCreatingDto> Emails { get; set; } = new List<EmailCreatingDto>();
         ///<summary>
         ///list of phones
         ///</summary>
         [Required]
+        [JsonProperty(PropertyName = "phones")]
         public ICollection<PhoneCreatingDto> Phones { get; set; } = new List<PhoneCreatingDto>();
         ///<summary>
         ///list of assets
         ///</summary>
+        [JsonProperty(PropertyName = "assets")]
         public ICollection<AssetDtoCreating> Assets { get; set; } = new List<AssetDtoCreating>();
 
 

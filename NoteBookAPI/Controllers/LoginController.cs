@@ -21,14 +21,10 @@ namespace NoteBookAPI.Controllers
     public class LoginController : ControllerBase
     {
         private IConfiguration _config;
-        private readonly ILoginRepositories _loginRepository;
-        private readonly IMapper _mapper;
         private readonly ILoginServices _service;
         private readonly ILogger _logger;
-        public LoginController(ILogger logger,ILoginRepositories LoginRepository, IMapper mapper, IConfiguration config, ILoginServices service)
+        public LoginController(ILogger logger,IConfiguration config, ILoginServices service)
         {
-            _loginRepository = LoginRepository ?? throw new ArgumentNullException(nameof(LoginRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _service = service ?? throw new ArgumentNullException(nameof(service));
             _logger = logger ?? throw new ArgumentException(nameof(logger));
@@ -49,10 +45,8 @@ namespace NoteBookAPI.Controllers
         [HttpPost]
         public IActionResult UserLogin([Required][FromBody] LoginCredentialsDto loginCredentials)
         {
-                _logger.LogInformation("Authentication Initiated");
-                Guid UserId = _loginRepository.EmailIdOfUser(loginCredentials.EmailAddress);
-                User User = _loginRepository.GetUser(UserId);
-                IActionResult response = Unauthorized();
+                _logger.LogInformation("Authentication Initiated"); 
+                User User = _service.GetUserByEmail(loginCredentials.EmailAddress);
                 bool check = _service.AuthenticateUser(User, loginCredentials);
                 if (check)
                 {
@@ -64,9 +58,9 @@ namespace NoteBookAPI.Controllers
                 }
                 else
                 {
-                    _logger.LogError("EmailId and password is wrong");
-                    return StatusCode(401, "Check your EmailId and Password");
-                }   
+                    _logger.LogError("EmailId and Password is wrong");
+                    return StatusCode(401, _service.ErrorToReturn("401", "Check your email Id and password"));
+            }   
         }
     }
 }

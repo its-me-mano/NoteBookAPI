@@ -14,7 +14,7 @@ namespace NoteBookAPI.Services
         /// find the type of the Refset
         ///</summary>
         /// <param name="type"></param>
-        RefSet TypeFinder(string type);
+        RefTerm TypeFinder(string type);
         ///<summary>
         /// check meta data exist or not
         ///</summary>

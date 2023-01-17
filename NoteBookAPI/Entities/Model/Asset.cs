@@ -12,7 +12,6 @@ namespace NoteBookAPI.Entities
     [DataContract]
     public class Asset : BaseModel
     {
-
         ///<summary>
         ///UserId of asset
         ///</summary>

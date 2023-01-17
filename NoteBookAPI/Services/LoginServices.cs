@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using NoteBookAPI.Contracts;
 using NoteBookAPI.Entities;
+using NoteBookAPI.Entities.Dto;
 using NoteBookAPI.Models;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -39,7 +40,6 @@ namespace NoteBookAPI.Services
             new Claim(JwtRegisteredClaimNames.Sub, userInfo.password),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
-
             JwtSecurityToken token = new JwtSecurityToken(_config["Jwt:Issuer"],
                 _config["Jwt:Issuer"],
                 claims,
@@ -47,6 +47,15 @@ namespace NoteBookAPI.Services
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        ///<summary>
+        /// fetch the user by email
+        ///</summary>
+        ///<param name="input"></param>
+        public User GetUserByEmail(string email) {
+            Guid UserId = loginRepository.EmailIdOfUser(email);
+            return loginRepository.GetUser(UserId);
         }
         ///<summary>
         /// Validated the user
@@ -56,6 +65,38 @@ namespace NoteBookAPI.Services
         {
             //Validate the User Credentials    
             return login.password == input.password;
+        }
+        ///<summary>
+        ///Return Error in the format
+        ///</summary>
+        ///<param name="description"></param>
+        ///<param name="statuscode"></param>
+        public ErrorDto ErrorToReturn(string statuscode, string description)
+        {
+            ErrorDto Response = new ErrorDto();
+            if (statuscode == "404")
+            {
+                Response.Message = "Not Found";
+            }
+            else if (statuscode == "400")
+            {
+                Response.Message = "Bad Request";
+            }
+            else if (statuscode == "401")
+            {
+                Response.Message = "Unauthorized";
+            }
+            else if (statuscode == "500")
+            {
+                Response.Message = "Internal server error";
+            }
+            else if (statuscode == "409")
+            {
+                Response.Message = "Conflict";
+            }
+            Response.StatusCode = statuscode;
+            Response.Description = description;
+            return Response;
         }
     }
 }

@@ -20,15 +20,10 @@ namespace NoteBookAPI.Controllers
     [Route("api/meta-data/ref-set")]
     public class MetaDataController : ControllerBase
     {
-        private IConfiguration _config;
-        private readonly IMetaDataRepositories _MetaDataRepository;
-        private readonly IMapper _mapper;
         private readonly IMetaDataServices _service;
         private readonly ILogger _logger;
-        public MetaDataController(IMetaDataRepositories MetaDataRepository, IMapper mapper,IMetaDataServices service,ILogger logger)
+        public MetaDataController( IMetaDataServices service,ILogger logger)
         {
-            _MetaDataRepository = MetaDataRepository ?? throw new ArgumentNullException(nameof(MetaDataRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _service = service ?? throw new ArgumentNullException(nameof(service));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             
@@ -57,11 +52,11 @@ namespace NoteBookAPI.Controllers
             if (value == null)
             {
                 _logger.LogError("Key not found");
-                return NotFound("Key not found");
+                return StatusCode(404, _service.ErrorToReturn("404", "Key not found"));
             }
             else {
                 _logger.LogInformation("MetaData found successfully");
-                return new JsonResult(value);
+                return Ok(value);
             }
         }
     

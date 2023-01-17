@@ -1,8 +1,5 @@
-﻿
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
-
-
 namespace NoteBookAPI.Models
 {
     public class LoginCredentialsDto

@@ -18,13 +18,11 @@ namespace NoteBookAPI.Controllers
     [Route("api/account")]
     public class UserController : ControllerBase
     {
-        private readonly IUserDetailRepositories _userDetailRepository;
         private readonly IMapper _mapper;
         private readonly IUserServices _service;
         private readonly ILogger _logger;
-        public UserController(IUserDetailRepositories userDetailRepositary, IMapper mapper, IUserServices service,ILogger logger)
+        public UserController( IMapper mapper, IUserServices service, ILogger logger)
         {
-            _userDetailRepository = userDetailRepositary ?? throw new ArgumentNullException(nameof(userDetailRepositary));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _service = service ?? throw new ArgumentException(nameof(mapper));
             _logger = logger ?? throw new ArgumentException(nameof(logger));
@@ -44,7 +42,7 @@ namespace NoteBookAPI.Controllers
         [SwaggerResponse(statusCode: 400, "The user input is not valid")]
         [HttpHead]
         [HttpGet(Name = "GetAllUser")]
-        public IActionResult GetUsers([Required][FromQuery]int PageNo,int PageSize,string OrderType,string OrderBy)
+        public IActionResult GetUsers([Required][FromQuery(Name ="page-no")] int PageNo, [FromQuery(Name = "page-size")] int PageSize, [FromQuery(Name = "order-type")] string OrderType, [FromQuery(Name = "order-by")] string OrderBy)
         {
             UserResourceParameter userResourceParameter = new UserResourceParameter() {
                 PageNo = PageNo,
@@ -53,7 +51,7 @@ namespace NoteBookAPI.Controllers
                 OrderType=OrderType
             };
             _logger.LogInformation("Fetching all addressBook initiated");
-            PageList<User> items = _userDetailRepository.GetUsers(userResourceParameter);
+            PageList<User> items = _service.GetUsers(userResourceParameter);  
             items = _service.AppendingValues(items);
             _logger.LogInformation("AddressBook gathered Successfully");
             return Ok(_mapper.Map<IEnumerable<UserDto>>(items));
@@ -73,7 +71,7 @@ namespace NoteBookAPI.Controllers
         [HttpGet("count")]
         public IActionResult GetCount()
         {
-            int count= _userDetailRepository.GetCount();
+            int count = _service.GetCount();
             _logger.LogInformation($"AddressBook count is {count}");
             return Ok($"count:{count}");
         }
@@ -98,7 +96,7 @@ namespace NoteBookAPI.Controllers
         public IActionResult GetUser([FromRoute(Name = "user-Id")][Required] Guid userId)
         {
             _logger.LogInformation("Fetch the user initiated");
-            if (_userDetailRepository.UserExits(userId))
+            if (_service.UserExists(userId))
             {
                 User UserFromRepo = _service.AppendingValueForUser(userId);
                 _logger.LogInformation("AddressBook feteched");
@@ -106,7 +104,7 @@ namespace NoteBookAPI.Controllers
             }
             else {
                 _logger.LogError("UserId not found");
-                return NotFound("Check the userId");
+                return StatusCode(404,_service.ErrorToReturn("404","Check the userId"));
             }
         }
         /// <summary>
@@ -130,19 +128,18 @@ namespace NoteBookAPI.Controllers
         public IActionResult DeleteUser([FromRoute(Name = "user-Id")][Required] Guid userId)
         {
             _logger.LogInformation("Delete user process initiated");
-            if (!_userDetailRepository.UserExits(userId))
+            if (_service.UserExists(userId))
             {
                 _logger.LogError("UserId not found");
-                return NotFound();
+                return StatusCode(404, _service.ErrorToReturn("404", "UserId not found"));
             }
-            User userFromRepo = _userDetailRepository.GetUser(userId);
+            User userFromRepo = _service.GetUser(userId);    
             if (userFromRepo == null)
             {
                 _logger.LogError("User data is null");
-                return NotFound();
+                return StatusCode(404, _service.ErrorToReturn("404", "User data is empty"));
             }
-            _userDetailRepository.DeleteUser(userFromRepo);
-            _userDetailRepository.Save();
+            _service.DeleteUser(userFromRepo);
             _logger.LogInformation("Userbook deleted successfully");
             return StatusCode(200, "Address book deleted successfully");
         }
@@ -154,14 +151,14 @@ namespace NoteBookAPI.Controllers
         /// <response code="200">User created successsfully</response>
         /// <response code="400">The user input is not valid.</response>
         /// <response code="401">The user is not authorized.</response>
-        /// <response code="404">MetaData is not found</response>
+        /// <response code="404">MetaData is does not exist</response>
         /// <response code="409">Email address or phone number already exist</response>
         /// <response code="500">Internal Server Error</response>
         [SwaggerOperation("CreaterUser")]
         [SwaggerResponse(statusCode: 201,"User created successsfully")]
         [SwaggerResponse(statusCode: 400, "The user input is not valid")]
         [SwaggerResponse(statusCode: 401, "The user is not authorized")]
-        [SwaggerResponse(statusCode: 404, "MetaData is not found")]
+        [SwaggerResponse(statusCode: 404, "MetaData does not exist")]
         [SwaggerResponse(statusCode: 409, "Email address or phone number already exist")]
         [SwaggerResponse(statusCode: 500, "Internal Server Error")]
         [Authorize]
@@ -175,16 +172,12 @@ namespace NoteBookAPI.Controllers
             if (returnCreate.status==200)
             {
                 user.CreateBy = LoginUserId;
-                user.DateCreated = DateTime.Now;
-                User userEntity = _mapper.Map<User>(user);
-                _userDetailRepository.AddUser(userEntity);
-                _userDetailRepository.Save();
-                UserDto userToReturn = _mapper.Map<UserDto>(userEntity);
+                UserDto userToReturn=_service.SaveCreateUser(user);
                 _logger.LogInformation("New addressBook created successfully");
                 return StatusCode(201, $"{userToReturn.Id}");
             }
             else {
-                return StatusCode(returnCreate.status, returnCreate.description);
+                return StatusCode(returnCreate.status, _service.ErrorToReturn(Convert.ToString(returnCreate.status),returnCreate.description));
             }
         }
         /// <summary>
@@ -213,10 +206,10 @@ namespace NoteBookAPI.Controllers
 
             _logger.LogInformation("UpdateUser has beed initiated");
             Guid LoginUserId = new Guid(_service.GetLoggedId(User));
-            if (!_userDetailRepository.UserExits(userId))
+            if (_service.UserExists(userId))
             {
-                _logger.LogError("UserID is not existed");
-                return NotFound("userId is not existed");
+                _logger.LogError("UserID does not exist");
+                return StatusCode(404, _service.ErrorToReturn("404", "UserId doest not exist"));
             }
             ReturnUpdateStatus returnUpdate = new ReturnUpdateStatus();
             returnUpdate= _service.UpdateTheUser(user, LoginUserId);
@@ -224,32 +217,18 @@ namespace NoteBookAPI.Controllers
             {
                 user.UpdateBy = LoginUserId;
                 user.DateUpdated = DateTime.Now;
-                User userFromRepo = _userDetailRepository.GetUser(userId);
+                User userFromRepo = _service.GetUser(userId);
                 if (userFromRepo == null)
                 {
-                    _logger.LogError("user not found");
-                    return NotFound("user not found");
+                    _logger.LogError("User does not exist");
+                    return StatusCode(404, _service.ErrorToReturn("404", "User does not exist"));
                 }
-                List<Address> AddressGuid = _userDetailRepository.GetAddressIds(userId).ToList();
-                userFromRepo.Address.ToList()[0].Id = AddressGuid[0].Id;
-                List<Email> EmailGuid = _userDetailRepository.GetEmailIds(userId).ToList();
-                userFromRepo.Emails.ToList()[0].Id = EmailGuid[0].Id;
-                List<Phone> PhoneGuid = _userDetailRepository.GetPhoneIds(userId).ToList();
-                userFromRepo.Phones.ToList()[0].Id = PhoneGuid[0].Id;
-                _mapper.Map(user, userFromRepo);
-                _userDetailRepository.UpdateUser(userFromRepo, userId);
-                _userDetailRepository.Save();
+                _service.AppendingValueForUpdate(userFromRepo,userId,user);
                 _logger.LogInformation("Addressbook updated successfully");
                 return Ok("Updated successfully");
             }
             else {
-                if (returnUpdate.status == 409)
-                {
-                    return Conflict(returnUpdate.description);
-                }
-                else {
-                    return NotFound(returnUpdate.description);
-                }
+                return StatusCode(returnUpdate.status, _service.ErrorToReturn(Convert.ToString(returnUpdate.status), returnUpdate.description));
             }
         }
             
