@@ -19,7 +19,7 @@ namespace NoteBookAPI.Services
         ///</summary>
         /// <param name="userFromRepo"></param>
         /// <param name="userId"></param>
-        void AppendingValueForUpdate(User userFromRepo,Guid userId,UserUpdatingDto user);
+        void AppendingValueForUpdate(User userFromRepo,Guid userId,UserUpdatingDto user,Guid userLogin);
 
         ///<summary>
         ///Update the userdetails  in the address,email,phone
@@ -63,7 +63,7 @@ namespace NoteBookAPI.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        UserDto SaveCreateUser(UserCreatingDto user);
+        UserDto SaveCreateUser(UserCreatingDto user,Guid loginId);
         /// <summary>
         /// Does the user exist or not
         /// </summary>

@@ -48,6 +48,5 @@ namespace NoteBookAPI.Models
         [JsonProperty(PropertyName = "assets")]
         public ICollection<AssetDto> Assets { get; set; } = new List<AssetDto>();
 
-
     }
 }

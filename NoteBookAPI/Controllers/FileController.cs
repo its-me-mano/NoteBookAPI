@@ -11,6 +11,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using NoteBookAPI.Contracts;
+using NoteBookAPI.Entities.Dto;
 
 namespace NoteBookAPI.Controllers
 {
@@ -19,7 +20,6 @@ namespace NoteBookAPI.Controllers
 
     public class FileController : ControllerBase
     {
-
         private readonly IMapper _mapper;
         private readonly IFileServices _service;
         private readonly ILogger _logger;
@@ -41,14 +41,14 @@ namespace NoteBookAPI.Controllers
         /// <response code="500">Internal Server Error</response>
         [SwaggerOperation("UploadImage")]
         [SwaggerResponse(statusCode: 201, "Success!")]
-        [SwaggerResponse(statusCode: 400, "The user input is not valid")]
-        [SwaggerResponse(statusCode: 401, "The user is not authorized")]
-        [SwaggerResponse(statusCode: 500, "Internal Server Error")]
+        [SwaggerResponse(statusCode: 400, "The user input is not valid", typeof(ErrorDto))]
+        [SwaggerResponse(statusCode: 401, "The user is not authorized", typeof(ErrorDto))]
+        [SwaggerResponse(statusCode: 500, "Internal Server Error", typeof(ErrorDto))]
         [Authorize]
         [HttpPost("uploadFile/{user-Id}")]
         public IActionResult UploadFiles([Required][FromRoute(Name ="user-Id")]Guid userId, [FromForm] IFormFile file)
         {
-            string LoggedUserId= User.FindFirstValue(ClaimTypes.NameIdentifier); 
+            string loggedUserId= User.FindFirstValue(ClaimTypes.NameIdentifier); 
             _logger.LogInformation("Uploading file is processing");
             if (file.Length < 0) 
             {
@@ -57,13 +57,13 @@ namespace NoteBookAPI.Controllers
             }
             AssetDtoCreating imageCreateDto = new AssetDtoCreating();
             imageCreateDto.File = _service.ImageToString(file);
-            Asset ImageEntity = _mapper.Map<Asset>(imageCreateDto);
-            ImageEntity.UserId = userId;
-            ImageEntity.CreateBy = new Guid(LoggedUserId);
-            ImageEntity.DateCreated = DateTime.Now;
-            ImageEntity.File = imageCreateDto.File;
-            _service.SaveImage(ImageEntity); 
-            imageCreateDto.Id = ImageEntity.Id;
+            Asset imageEntity = _mapper.Map<Asset>(imageCreateDto);
+            imageEntity.UserId = userId;
+            imageEntity.CreateBy = new Guid(loggedUserId);
+            imageEntity.DateCreated = DateTime.Now;
+            imageEntity.File = imageCreateDto.File;
+            _service.SaveImage(imageEntity); 
+            imageCreateDto.Id = imageEntity.Id;
             imageCreateDto.UserId = userId;          
             _logger.LogInformation("File uploaded successfully");
             return new JsonResult(imageCreateDto);
@@ -79,9 +79,9 @@ namespace NoteBookAPI.Controllers
         /// <response code="500">Internal Server Error</response>
         [SwaggerOperation("DownloadImage")]
         [SwaggerResponse(statusCode: 201, "Success!")]
-        [SwaggerResponse(statusCode: 400, "The user input is not valid")]
-        [SwaggerResponse(statusCode: 401, "The user is not authorized")]
-        [SwaggerResponse(statusCode: 500, "Internal Server Error")]
+        [SwaggerResponse(statusCode: 400, "The user input is not valid", typeof(ErrorDto))]
+        [SwaggerResponse(statusCode: 401, "The user is not authorized", typeof(ErrorDto))]
+        [SwaggerResponse(statusCode: 500, "Internal Server Error", typeof(ErrorDto))]
         [Authorize]
         [HttpGet("{asset-id}")]
         public IActionResult DownloadFile([Required][FromRoute(Name ="asset-id")]string assetId)
@@ -90,10 +90,10 @@ namespace NoteBookAPI.Controllers
             if (assetId == null)
             {
                 _logger.LogError("AssetId is null");
-                return StatusCode(400, _service.ErrorToReturn("400", "AssetId is null"));
+                return StatusCode(404, _service.ErrorToReturn("404", "AssetId is null"));
             }
-            Asset Image64 = _service.GetImage(assetId);    
-            MemoryStream outputStream = new MemoryStream(Convert.FromBase64String(Image64.File));
+            Asset image = _service.GetImage(assetId);    
+            MemoryStream outputStream = new MemoryStream(Convert.FromBase64String(image.File));
             byte[] bytesInStream = outputStream.ToArray();
             _logger.LogInformation("File downloaded successfully");
             return File(bytesInStream, "APPLICATION/octnet-stream");

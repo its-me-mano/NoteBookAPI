@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NoteBookAPI.Models
 {
-    public class EmailUpdatingDto : BaseModelDto
+    public class EmailUpdatingDto 
     {
         ///<summary>
         ///email address

@@ -16,7 +16,7 @@ namespace NoteBookAPI.Contracts
         /// upload the image  
         ///</summary>
         ///<param name="img"></param>
-        public void uploadImage(Asset img);
+        public void UploadImage(Asset img);
         ///<summary>
         /// get the image
         ///</summary>

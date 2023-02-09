@@ -25,30 +25,30 @@ namespace NoteBookAPI.Services
             {
                 throw new ArgumentNullException(nameof(userResourceParameter));
             }
-            IQueryable<User> Collection = _context.Users as IQueryable<User>;
+            IQueryable<User> collection = _context.Users as IQueryable<User>;
             if (!string.IsNullOrWhiteSpace(userResourceParameter.FirstName))
             {
-                string Query = userResourceParameter.FirstName;
-                Collection = Collection.Where(a => a.FirstName.Contains(Query));
+                string query = userResourceParameter.FirstName;
+                collection = collection.Where(a => a.FirstName.Contains(query));
             }
             if (userResourceParameter.OrderType != null)
             {
                 if (userResourceParameter.OrderType.Equals("DESC"))
                 {
-                    Collection = Collection.OrderByDescending(a => userResourceParameter.OrderBy.Equals("FirstName") ? a.FirstName : a.LastName);
+                    collection = collection.OrderByDescending(a => userResourceParameter.OrderBy.Equals("FirstName") ? a.FirstName : a.LastName);
                 }
                 else 
                 {
-                    Collection = Collection.OrderBy(a => userResourceParameter.OrderBy.Equals("FirstName") ? a.FirstName : a.LastName);
+                    collection = collection.OrderBy(a => userResourceParameter.OrderBy.Equals("FirstName") ? a.FirstName : a.LastName);
                 }
             }
-            return PageList<User>.Create(Collection, userResourceParameter.PageNo, userResourceParameter.PageSize);
+            return PageList<User>.Create(collection, userResourceParameter.PageNo, userResourceParameter.PageSize);
         }
         ///<summary>
         /// check meta data exist or not
         ///</summary>
         ///<param name="type"></param>
-        public bool metaExist(string type)
+        public bool MetaExist(string type)
         {
             return _context.RefTerms.Any(a => a.Key == type);
         }
@@ -181,7 +181,7 @@ namespace NoteBookAPI.Services
         ///cget the asset
         ///</summary>
         ///<param name="userId"></param>
-        public Guid getAssetId(Guid userId)
+        public Guid GetAssetId(Guid userId)
         {
             return _context.Assets.Where(a => a.UserId.Equals(userId)).FirstOrDefault().Id;
 

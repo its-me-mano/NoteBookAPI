@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NoteBookAPI.Models
 {
-    public class AddressUpdatingDto : BaseModelDto
+    public class AddressUpdatingDto 
     {
 
     

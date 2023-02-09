@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +13,7 @@ using Newtonsoft.Json.Serialization;
 using NoteBookAPI.Contracts;
 using NoteBookAPI.Controllers;
 using NoteBookAPI.DbContexts;
+using NoteBookAPI.Profiles;
 using NoteBookAPI.Repositories;
 using NoteBookAPI.Services;
 using System;
@@ -63,8 +65,6 @@ namespace NoteBookAPI
                 });
             });
      
-
-
             services.AddScoped<IUserDetailRepositories, UserDetailsRepositories>();
             services.AddScoped<IUserServices, UserServices>();
             services.AddScoped<IFileRepositories, FileRepositories>();
@@ -73,11 +73,9 @@ namespace NoteBookAPI
             services.AddScoped<ILoginServices, LoginServices>();
             services.AddScoped<IMetaDataRepositories, MetaDataRepositories>();
             services.AddScoped<IMetaDataServices, MetaDataServices>();
-
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-
             services.AddDistributedMemoryCache();
+
             var serviceProvider = services.BuildServiceProvider();
             var logger = serviceProvider.GetService<ILogger<LoginController>>();
             var logger1 = serviceProvider.GetService<ILogger<MetaDataController>>();
@@ -87,9 +85,6 @@ namespace NoteBookAPI
             services.AddSingleton(typeof(ILogger), logger1);
             services.AddSingleton(typeof(ILogger), logger2);
             services.AddSingleton(typeof(ILogger), logger3);
-
-
-
 
             services.AddDbContext<UserDetailsContext>(options =>
             {

@@ -26,7 +26,7 @@ namespace NoteBookAPI.Repositories
         /// Guid list of RefSet
         ///</summary>
         ///<param name="id"></param>
-        public bool metaExist(string type)
+        public bool MetaExist(string type)
         {
             return _context.RefTerms.Any(a => a.Key == type);
         }
@@ -34,23 +34,23 @@ namespace NoteBookAPI.Repositories
         /// Return the List of RefSet
         ///</summary>
         ///<param name="items"></param>
-        public IEnumerable<Guid> getRefTermGroup(Guid id)
+        public IEnumerable<Guid> GetRefTermGroup(Guid id)
         {
-            List<Guid> Group = new List<Guid>();
+            List<Guid> group = new List<Guid>();
             foreach (SetRefTerm item in _context.SetRefTerms)
             {
                 if (item.RefSetid.Equals(id))
                 {
-                    Group.Add(item.ReftermId);
+                    group.Add(item.ReftermId);
                 }
             }
-            return Group;
+            return group;
         }
         ///<summary>
         /// Get the RefTerm based on Refterm Name  
         ///</summary>
         ///<param name="name"></param>
-        public IEnumerable<RefTerm> getRefTerm(IEnumerable<Guid> items)
+        public IEnumerable<RefTerm> GetRefTerm(IEnumerable<Guid> items)
         {
             return _context.RefTerms.Where(a => items.Contains(a.Id));
         }
@@ -58,7 +58,7 @@ namespace NoteBookAPI.Repositories
         /// check the metadata exist or not 
         ///</summary>
         ///<param name="type"></param>
-        public RefSet getRefSet(string name)
+        public RefSet GetRefSet(string name)
         {
             return (_context.RefSets.FirstOrDefault(a => a.Key == name));
         }

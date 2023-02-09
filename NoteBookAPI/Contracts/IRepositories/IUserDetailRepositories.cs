@@ -19,12 +19,12 @@ namespace NoteBookAPI.Services
         /// check meta data exist or not
         ///</summary>
         ///<param name="type"></param>
-        bool metaExist(string type);
+        bool MetaExist(string type);
         ///<summary>
         ///get the asset by userid
         ///</summary>
         ///<param name="userId"></param>
-        Guid getAssetId(Guid userId);
+        Guid GetAssetId(Guid userId);
         ///<summary>
         ///check mail exist or not
         ///</summary>

@@ -28,5 +28,6 @@ namespace NoteBookAPI.Models
         [Required]
         [JsonProperty(PropertyName = "type")]
         public Guid TypeId { get; set; }
+
     }
 }

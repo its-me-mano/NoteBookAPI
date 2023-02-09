@@ -4,7 +4,7 @@ using System;
 
 namespace NoteBookAPI.Models
 {
-    public class AssetUpdateDto : BaseModelDto
+    public class AssetUpdateDto 
     {
         ///<summary>
         ///Asset Id

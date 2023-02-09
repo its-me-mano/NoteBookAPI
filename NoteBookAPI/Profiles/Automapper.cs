@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using NoteBookAPI.Entities;
 using NoteBookAPI.Models;
+using NoteBookAPI.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,18 +14,18 @@ namespace NoteBookAPI.Profiles
         public Automapper() {
 
             // Address
-            CreateMap<AddressCreatingDto, Entities.Address>().ForMember(
+            CreateMap<AddressCreatingDto, Address>().ForMember(
              dest => dest.Country,
              opt => opt.MapFrom(src => (Guid.Parse(src.Country)))
-             ).ReverseMap();
-            CreateMap<AddressUpdatingDto, Entities.Address>().ForMember(
+            ).ReverseMap();
+            CreateMap<AddressUpdatingDto, Address>().ForMember(
                 dest => dest.Country,
                 opt => opt.MapFrom(src => (Guid.Parse(src.Country)))
             ).ForMember(
                     dest => dest.Type,
                     opt => opt.MapFrom(src => (Guid.Parse(src.Type)))
-           ).ReverseMap();
-            CreateMap<AddressDto, Entities.Address>().ReverseMap();
+            ).ReverseMap();
+            CreateMap<AddressDto,Address>().ReverseMap();
 
 
             //Asset

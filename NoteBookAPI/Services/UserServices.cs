@@ -15,14 +15,12 @@ namespace NoteBookAPI.Services
 
     {
         private readonly IUserDetailRepositories userDetailRepository;
-        private IConfiguration configuration;
         private readonly IMapper mapper;
         private readonly ILogger logger;
-        public UserServices(IUserDetailRepositories _userDetailRepository,IMapper _mapper,IConfiguration _configuration,ILogger _logger)
+        public UserServices(IUserDetailRepositories _userDetailRepository,IMapper _mapper,ILogger _logger)
         {
             userDetailRepository = _userDetailRepository ?? throw new ArgumentNullException(nameof(_userDetailRepository));
             mapper = _mapper ?? throw new ArgumentNullException(nameof(_mapper));
-            configuration = _configuration ?? throw new ArgumentNullException(nameof(_configuration));
             logger = _logger;
         }
 
@@ -31,26 +29,16 @@ namespace NoteBookAPI.Services
         ///</summary>
         /// <param name="userId"></param>
         /// <param name="userFromRepo"></param>
-        public void AppendingValueForUpdate(User userFromRepo,Guid userId,UserUpdatingDto user) {
-            
-            List<Address> AddressGuid = userDetailRepository.GetAddressIds(userId).ToList();
-            int i = 0;
-            foreach (var item in userFromRepo.Address) {
-                item.Id = AddressGuid[i++].Id;
-            }
-            i = 0;
-            List<Email> EmailGuid = userDetailRepository.GetEmailIds(userId).ToList();
-            foreach (var item in userFromRepo.Emails)
-            {
-                item.Id = EmailGuid[i++].Id;
-            }
-            i = 0;
-            List<Phone> PhoneGuid = userDetailRepository.GetPhoneIds(userId).ToList();
-            foreach (var item in userFromRepo.Phones)
-            {
-                item.Id = PhoneGuid[i++].Id;
-            }
+        public void AppendingValueForUpdate(User userFromRepo,Guid userId,UserUpdatingDto user,Guid userLogin) {
+            List<Address> addressess = userDetailRepository.GetAddressIds(userId).ToList();
+            userFromRepo.Address.Select((value, index) => value.Id = addressess[index].Id);
+            List<Email> emails = userDetailRepository.GetEmailIds(userId).ToList();
+            userFromRepo.Emails.Select((value, index) => value.Id = emails[index].Id);
+            List<Phone> phones = userDetailRepository.GetPhoneIds(userId).ToList();
+            userFromRepo.Phones.Select((value, index) => value.Id = phones[index].Id);
             mapper.Map(user, userFromRepo);
+            userFromRepo.DateUpdated = DateTime.Now;
+            userFromRepo.UpdateBy = userLogin;
             userDetailRepository.UpdateUser(userFromRepo, userId);
             userDetailRepository.Save();
         }
@@ -60,10 +48,10 @@ namespace NoteBookAPI.Services
         ///</summary>
         ///<param name="user"></param>
         public string GetLoggedId(ClaimsPrincipal User) {
-            string LoggedUserId=String.Empty;
+            string loggedUserId=String.Empty;
              if (!String.IsNullOrEmpty(ClaimTypes.NameIdentifier))
-                 LoggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-             return LoggedUserId;
+                 loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+             return loggedUserId;
         }
         /// <summary>
         /// Get the count of the users
@@ -100,13 +88,18 @@ namespace NoteBookAPI.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public UserDto SaveCreateUser(UserCreatingDto user) {
-           
-            user.DateCreated = DateTime.Now;
+        public UserDto SaveCreateUser(UserCreatingDto user,Guid loginUserId) {
             User userEntity = mapper.Map<User>(user);
+            userEntity.CreateBy = loginUserId;
+            userEntity.DateCreated = DateTime.Now;
+            userEntity.Address.Select(a => a.CreateBy = loginUserId);
+            userEntity.Address.Select(a => a.DateCreated = DateTime.Now);
+            userEntity.Phones.Select(a => a.CreateBy = loginUserId);
+            userEntity.Phones.Select(a => a.DateCreated = DateTime.Now);
+            userEntity.Emails.Select(a => a.CreateBy = loginUserId);
+            userEntity.Emails.Select(a => a.DateCreated = DateTime.Now);
             userDetailRepository.AddUser(userEntity);
-            userDetailRepository.Save();
-          
+            userDetailRepository.Save();      
             return mapper.Map<UserDto>(userEntity);
         }
 
@@ -124,29 +117,8 @@ namespace NoteBookAPI.Services
         ///<param name="description"></param>
         ///<param name="statuscode"></param>
         public ErrorDto ErrorToReturn(string statuscode, string description) {
-            ErrorDto Response = new ErrorDto();
-            if (statuscode == "404")
-            {
-                Response.Message = "Not Found";
-            }
-            else if (statuscode == "400")
-            {
-                Response.Message = "Bad Request";
-            }
-            else if (statuscode == "401")
-            {
-                Response.Message = "Unauthorized";
-            }
-            else if (statuscode == "500")
-            {
-                Response.Message = "Internal server error";
-            }
-            else if (statuscode == "409") {
-                Response.Message = "Conflict";
-            }
-            Response.StatusCode = statuscode;
-            Response.Description = description;
-            return Response;
+            ErrorManage errorManage = new ErrorManage();
+            return errorManage.ReturningError(statuscode, description);
         }
         ///<summary>
         ///Update the userdetails  in the address,email,phone
@@ -157,7 +129,7 @@ namespace NoteBookAPI.Services
             ReturnCreateStatus returnCreate = new ReturnCreateStatus();
             foreach (EmailCreatingDto item in user.Emails)
             {
-                if (!userDetailRepository.metaExist(item.type))
+                if (!userDetailRepository.MetaExist(item.type))
                 {
                     logger.LogError("Email type is not exist");
                     returnCreate.status = 404;
@@ -175,12 +147,11 @@ namespace NoteBookAPI.Services
                     
                 }
                 item.type = RefTermKeyToGuidString(item.type);
-                item.CreateBy = LoggedUserId;
-                item.DateCreated = DateTime.Now;
+              
             }
             foreach (PhoneCreatingDto item in user.Phones)
             {
-                if (!userDetailRepository.metaExist(item.type))
+                if (!userDetailRepository.MetaExist(item.type))
                 {
                     logger.LogError("Phone number type is not exist");
                     returnCreate.status = 404;
@@ -189,12 +160,11 @@ namespace NoteBookAPI.Services
                     return returnCreate;
                 }
                 item.type = RefTermKeyToGuidString(item.type);
-                item.CreateBy = LoggedUserId;
-                item.DateCreated = DateTime.Now;
+               
             }
             foreach (AddressCreatingDto item in user.Address)
             {
-                if (!userDetailRepository.metaExist(item.Country))
+                if (!userDetailRepository.MetaExist(item.Country))
                 {
                     logger.LogError($"Countrytype is not exist{item.Country}");
                     returnCreate.status = 404;
@@ -202,7 +172,7 @@ namespace NoteBookAPI.Services
                     returnCreate.user = user;
                     return returnCreate;
                 }
-                if (!userDetailRepository.metaExist(item.Type))
+                if (!userDetailRepository.MetaExist(item.Type))
                 {
                     logger.LogError("Addresstype is not exist");
                     returnCreate.status = 404;
@@ -213,8 +183,6 @@ namespace NoteBookAPI.Services
                 }
                 item.Type = RefTermKeyToGuidString(item.Type);
                 item.Country =RefTermKeyToGuidString(item.Country);
-                item.CreateBy = LoggedUserId;
-                item.DateCreated = DateTime.Now;
             }
             returnCreate.user = user;
             returnCreate.status = 200;
@@ -240,7 +208,7 @@ namespace NoteBookAPI.Services
                     errorReturn.user = user;
                     return errorReturn;
                 }
-                if (!userDetailRepository.metaExist(item.type))
+                if (!userDetailRepository.MetaExist(item.type))
                 {
                     logger.LogError("Email type is not existed");
                     errorReturn.status = 404;
@@ -249,12 +217,11 @@ namespace NoteBookAPI.Services
                     return errorReturn;
                 }
                 item.type = (userDetailRepository.TypeFinder(item.type)).Id.ToString();
-                item.UpdateBy = LoggedUserId;
-                item.DateUpdated = DateTime.Now;
+              
             }
             foreach (PhoneUpdatingDto item in user.Phones)
             {
-                if (!userDetailRepository.metaExist(item.type))
+                if (!userDetailRepository.MetaExist(item.type))
                 {
                     logger.LogError("Phone number type  is not existed");
                     errorReturn.status = 404;
@@ -263,12 +230,11 @@ namespace NoteBookAPI.Services
                     return errorReturn;
                 }
                 item.type = (userDetailRepository.TypeFinder(item.type)).Id.ToString();
-                item.UpdateBy = LoggedUserId;
-                item.DateUpdated = DateTime.Now;
+                
             }
             foreach (AddressUpdatingDto item in user.Address)
             {
-                if (!userDetailRepository.metaExist(item.Country))
+                if (!userDetailRepository.MetaExist(item.Country))
                 {
                     logger.LogError($"Countrytype is not exist{item.Country}");
                     errorReturn.status = 404;
@@ -276,7 +242,7 @@ namespace NoteBookAPI.Services
                     errorReturn.user = user;
                     return errorReturn;  
                 }
-                if (!userDetailRepository.metaExist(item.Type))
+                if (!userDetailRepository.MetaExist(item.Type))
                 {
                     logger.LogError($"Addresstype is not exist");
                     errorReturn.status = 404;
@@ -286,8 +252,7 @@ namespace NoteBookAPI.Services
                 }
                 item.Type = (userDetailRepository.TypeFinder(item.Type)).Id.ToString();
                 item.Country = (userDetailRepository.TypeFinder(item.Country)).Id.ToString();
-                item.UpdateBy = LoggedUserId;
-                item.DateUpdated = DateTime.Now;
+                
             }
             errorReturn.user = user;
             errorReturn.status = 200;
@@ -300,10 +265,10 @@ namespace NoteBookAPI.Services
         /// <param name="PageSize"></param>
         /// <param name="PageNo"></param>
         public bool checkPageNumberLimit(int PageSize,int PageNo) {
-            int CountBook = userDetailRepository.GetCount();
-            double MaxPageNo = (double)CountBook / (double)(PageSize);
-            int MaxiPage = Convert.ToInt32(Math.Ceiling(MaxPageNo));
-            return MaxiPage < PageNo;
+            int countBook = userDetailRepository.GetCount();
+            double maxPageNo = (double)countBook / (double)(PageSize);
+            int maxiPage = Convert.ToInt32(Math.Ceiling(maxPageNo));
+            return maxiPage < PageNo;
         }
 
         ///<summary>
@@ -320,18 +285,17 @@ namespace NoteBookAPI.Services
             }
             return items;
         }
-
         ///<summary>
         ///Append the userid
         ///</summary>
         ///<param name="userId"></param>
         public User AppendingValueForUser(Guid userId) {
-            User UserFromRepo = userDetailRepository.GetUser(userId);
-            UserFromRepo.Emails = userDetailRepository.GetEmailIds(UserFromRepo.Id).ToList();
-            UserFromRepo.Address = userDetailRepository.GetAddressIds(UserFromRepo.Id).ToList();
-            UserFromRepo.Phones = userDetailRepository.GetPhoneIds(UserFromRepo.Id).ToList();
-            UserFromRepo.Assets = userDetailRepository.GetAssetIds(UserFromRepo.Id).ToList();
-            return UserFromRepo;
+            User userFromRepo = userDetailRepository.GetUser(userId);
+            userFromRepo.Emails = userDetailRepository.GetEmailIds(userFromRepo.Id).ToList();
+            userFromRepo.Address = userDetailRepository.GetAddressIds(userFromRepo.Id).ToList();
+            userFromRepo.Phones = userDetailRepository.GetPhoneIds(userFromRepo.Id).ToList();
+            userFromRepo.Assets = userDetailRepository.GetAssetIds(userFromRepo.Id).ToList();
+            return userFromRepo;
         }
         ///<summary>
         ///Convert type type to  reftermKey  guid as string
@@ -340,12 +304,6 @@ namespace NoteBookAPI.Services
         public string RefTermKeyToGuidString(string type) {
             return (userDetailRepository.TypeFinder(type)).Id.ToString();
         }
-
-        
-
-
-      
-
     }
 }
 

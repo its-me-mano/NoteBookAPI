@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NoteBookAPI.Models
 {
-    public class UserUpdatingDto : BaseModelDto
+    public class UserUpdatingDto 
     {
         ///<summary>
         ///User FirstName
@@ -26,7 +26,6 @@ namespace NoteBookAPI.Models
         ///</summary>
         [RegularExpression(@"^.*(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!*@#$%^&+=]).*$", ErrorMessage = "Password must be one lower case , one upper case , special character,one number and 8 characters length")]
         public string password { get; set; }
-
         ///<summary>
         ///list of address
         ///</summary>

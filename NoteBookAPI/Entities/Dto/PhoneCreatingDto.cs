@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 namespace NoteBookAPI.Models
 {
-    public class PhoneCreatingDto : Entities.Dto.BaseModelDto
+    public class PhoneCreatingDto 
     {
         ///<summary>
         ///Phonenumber 

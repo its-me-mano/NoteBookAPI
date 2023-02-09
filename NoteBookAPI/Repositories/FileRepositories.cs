@@ -40,7 +40,7 @@ namespace NoteBookAPI.Repositories
         /// upload the image  
         ///</summary>
         ///<param name="img"></param>
-        public void uploadImage(Asset img)
+        public void UploadImage(Asset img)
         {
             if (img == null)
             {

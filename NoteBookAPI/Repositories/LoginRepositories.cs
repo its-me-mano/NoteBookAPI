@@ -33,13 +33,13 @@ namespace NoteBookAPI.Repositories
         ///<param name="id"></param>
         public Guid EmailIdOfUser(string email)
         {
-            IQueryable<Email> Collection = _context.Emails as IQueryable<Email>;
+            IQueryable<Email> collection = _context.Emails as IQueryable<Email>;
             if (!string.IsNullOrWhiteSpace(email))
             {
                 email = email.Trim();
-                Collection = Collection.Where(a => a.EmailAddress == email);
+                collection = collection.Where(a => a.EmailAddress == email);
             }
-            Email item = Collection.FirstOrDefault();
+            Email item = collection.FirstOrDefault();
             if (item == null)
                 throw new ArgumentNullException(nameof(email));
             return item.UserId;

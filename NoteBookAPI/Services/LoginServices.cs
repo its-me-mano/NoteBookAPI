@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using NoteBookAPI.Contracts;
 using NoteBookAPI.Entities;
 using NoteBookAPI.Entities.Dto;
+using NoteBookAPI.Helper;
 using NoteBookAPI.Models;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -73,30 +74,8 @@ namespace NoteBookAPI.Services
         ///<param name="statuscode"></param>
         public ErrorDto ErrorToReturn(string statuscode, string description)
         {
-            ErrorDto Response = new ErrorDto();
-            if (statuscode == "404")
-            {
-                Response.Message = "Not Found";
-            }
-            else if (statuscode == "400")
-            {
-                Response.Message = "Bad Request";
-            }
-            else if (statuscode == "401")
-            {
-                Response.Message = "Unauthorized";
-            }
-            else if (statuscode == "500")
-            {
-                Response.Message = "Internal server error";
-            }
-            else if (statuscode == "409")
-            {
-                Response.Message = "Conflict";
-            }
-            Response.StatusCode = statuscode;
-            Response.Description = description;
-            return Response;
+            ErrorManage errorManage = new ErrorManage();
+            return errorManage.ReturningError(statuscode, description);
         }
     }
 }

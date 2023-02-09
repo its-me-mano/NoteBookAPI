@@ -17,21 +17,21 @@ namespace NoteBookAPI.Contracts
         /// Guid list of RefSet
         ///</summary>
         ///<param name="id"></param>
-        IEnumerable<Guid> getRefTermGroup(Guid id);
+        IEnumerable<Guid> GetRefTermGroup(Guid id);
         ///<summary>
         /// Return the List of RefSet
         ///</summary>
         ///<param name="items"></param>
-        IEnumerable<RefTerm> getRefTerm(IEnumerable<Guid> items);
+        IEnumerable<RefTerm> GetRefTerm(IEnumerable<Guid> items);
         ///<summary>
         /// Get the RefTerm based on Refterm Name  
         ///</summary>
         ///<param name="name"></param>
-        RefSet getRefSet(string name);
+        RefSet GetRefSet(string name);
         ///<summary>
         /// check the metadata     exist or not 
         ///</summary>
         ///<param name="type"></param>
-        bool metaExist(string type);
+        bool MetaExist(string type);
     }
 }

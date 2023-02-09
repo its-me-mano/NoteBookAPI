@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NoteBookAPI.Models
 {
-    public class UserCreatingDto : Entities.Dto.BaseModelDto
+    public class UserCreatingDto 
     {
         ///<summary>
         ///First name of the user

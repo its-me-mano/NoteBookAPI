@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NoteBookAPI.Contracts;
 using NoteBookAPI.Entities;
+using NoteBookAPI.Entities.Dto;
 using NoteBookAPI.Models;
 using NoteBookAPI.Services;
 using Swashbuckle.AspNetCore.Annotations;
@@ -40,10 +41,10 @@ namespace NoteBookAPI.Controllers
         /// <response code="500">Internal Server Error</response>
         [SwaggerOperation("Metadata API")]
         [SwaggerResponse(statusCode: 200, "Success!")]
-        [SwaggerResponse(statusCode: 400, "The user input is not valid")]
-        [SwaggerResponse(statusCode: 401, "The user is not authorized")]
-        [SwaggerResponse(statusCode: 404, "The user  is not found")]
-        [SwaggerResponse(statusCode: 500, "Internal Server Error")]
+        [SwaggerResponse(statusCode: 400, "The user input is not valid", typeof(ErrorDto))]
+        [SwaggerResponse(statusCode: 401, "The user is not authorized", typeof(ErrorDto))]
+        [SwaggerResponse(statusCode: 404, "The user  is not found", typeof(ErrorDto))]
+        [SwaggerResponse(statusCode: 500, "Internal Server Error", typeof(ErrorDto))]
         [Authorize]
         [HttpGet("{Key}")]
         public IActionResult RefSet([FromRoute(Name ="Key")][Required]string Key) {

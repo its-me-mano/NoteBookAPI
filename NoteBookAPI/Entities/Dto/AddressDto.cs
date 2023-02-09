@@ -64,5 +64,6 @@ namespace NoteBookAPI.Models
         [Required]
         [JsonProperty(PropertyName = "country")]
         public Guid Country { get; set; }
+
     }
 }

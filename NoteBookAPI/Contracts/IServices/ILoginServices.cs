@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using NoteBookAPI.Entities;
 using NoteBookAPI.Entities.Dto;
 using NoteBookAPI.Models;
