@@ -188,14 +188,6 @@ namespace NoteBookAPI.Services
         }
 
         ///<summary>
-        ///update the asset
-        ///</summary>
-        ///<param name="assetDto"></param>
-        public void UpdateAsset(Asset assetDto)
-        {
-
-        }
-        ///<summary>
         ///add the asset
         ///</summary>
         ///<param name="assetDto"></param>

@@ -120,6 +120,7 @@ namespace NoteBookAPI.Services
             ErrorManage errorManage = new ErrorManage();
             return errorManage.ReturningError(statuscode, description);
         }
+
         ///<summary>
         ///Update the userdetails  in the address,email,phone
         ///</summary>
@@ -131,17 +132,17 @@ namespace NoteBookAPI.Services
             {
                 if (!userDetailRepository.MetaExist(item.type))
                 {
-                    logger.LogError("Email type is not exist");
+                    logger.LogError("Email type does not exist");
                     returnCreate.status = 404;
-                    returnCreate.description = "Email type is not exist";
+                    returnCreate.description = "Email type does not exist";
                     returnCreate.user = user;
                     return returnCreate;
                 }
                 if (userDetailRepository.EmailExist(item.EmailAddress))
                 {
-                    logger.LogError("Email is already exist");
+                    logger.LogError("Email already exist");
                     returnCreate.status = 409;
-                    returnCreate.description = "Email is already exist";
+                    returnCreate.description = "Email  already exist";
                     returnCreate.user = user;
                     return returnCreate;
                     
@@ -153,9 +154,9 @@ namespace NoteBookAPI.Services
             {
                 if (!userDetailRepository.MetaExist(item.type))
                 {
-                    logger.LogError("Phone number type is not exist");
+                    logger.LogError("Phone number type does not exist");
                     returnCreate.status = 404;
-                    returnCreate.description = "phone number type is not exist";
+                    returnCreate.description = "phone number type does not exist";
                     returnCreate.user = user;
                     return returnCreate;
                 }
@@ -166,17 +167,17 @@ namespace NoteBookAPI.Services
             {
                 if (!userDetailRepository.MetaExist(item.Country))
                 {
-                    logger.LogError($"Countrytype is not exist{item.Country}");
+                    logger.LogError($"Countrytype does not exist{item.Country}");
                     returnCreate.status = 404;
-                    returnCreate.description = "Country  type is not exist";
+                    returnCreate.description = "Country  type does not exist";
                     returnCreate.user = user;
                     return returnCreate;
                 }
                 if (!userDetailRepository.MetaExist(item.Type))
                 {
-                    logger.LogError("Addresstype is not exist");
+                    logger.LogError("Addresstype does not exist");
                     returnCreate.status = 404;
-                    returnCreate.description = "Addresstype is not exist";
+                    returnCreate.description = "Addresstype does not exist";
                     returnCreate.user = user;
                     return returnCreate;
                     
@@ -190,7 +191,7 @@ namespace NoteBookAPI.Services
             return returnCreate;
         }
 
-
+  
         ///<summary>
         ///Update the userdetails  in the address,email,phone
         ///</summary>
@@ -202,30 +203,29 @@ namespace NoteBookAPI.Services
             {
                 if (userDetailRepository.EmailExist(item.EmailAddress))
                 {
-                    logger.LogError("Email is already existed");
+                    logger.LogError("Email already existed");
                     errorReturn.status = 409;
-                    errorReturn.description = "Email is already exist";
+                    errorReturn.description = "Email already exist";
                     errorReturn.user = user;
-                    return errorReturn;
+                    return (errorReturn);
                 }
                 if (!userDetailRepository.MetaExist(item.type))
                 {
-                    logger.LogError("Email type is not existed");
+                    logger.LogError("Email type does not existed");
                     errorReturn.status = 404;
-                    errorReturn.description = "Email type is not exist";
+                    errorReturn.description = "Email type does not exist";
                     errorReturn.user = user;
                     return errorReturn;
                 }
                 item.type = (userDetailRepository.TypeFinder(item.type)).Id.ToString();
-              
             }
             foreach (PhoneUpdatingDto item in user.Phones)
             {
                 if (!userDetailRepository.MetaExist(item.type))
                 {
-                    logger.LogError("Phone number type  is not existed");
+                    logger.LogError("Phone number type  does not existed");
                     errorReturn.status = 404;
-                    errorReturn.description = "Phone number type is not exist";
+                    errorReturn.description = "Phone number type does not exist";
                     errorReturn.user = user;
                     return errorReturn;
                 }
@@ -236,23 +236,22 @@ namespace NoteBookAPI.Services
             {
                 if (!userDetailRepository.MetaExist(item.Country))
                 {
-                    logger.LogError($"Countrytype is not exist{item.Country}");
+                    logger.LogError($"Countrytype does not exist{item.Country}");
                     errorReturn.status = 404;
-                    errorReturn.description = "CountryType  type is not exist";
+                    errorReturn.description = "CountryType  type does not exist";
                     errorReturn.user = user;
                     return errorReturn;  
                 }
                 if (!userDetailRepository.MetaExist(item.Type))
                 {
-                    logger.LogError($"Addresstype is not exist");
+                    logger.LogError($"Addresstype does not exist");
                     errorReturn.status = 404;
-                    errorReturn.description = "Address type is not exist";
+                    errorReturn.description = "Address type does not exist";
                     errorReturn.user = user;
                     return errorReturn;
                 }
                 item.Type = (userDetailRepository.TypeFinder(item.Type)).Id.ToString();
                 item.Country = (userDetailRepository.TypeFinder(item.Country)).Id.ToString();
-                
             }
             errorReturn.user = user;
             errorReturn.status = 200;

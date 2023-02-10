@@ -71,9 +71,9 @@ namespace UnitTestForAddressBook
             loginRepository = new LoginRepositories(context);
             fileRepository = new FileRepositories(context);
             UserService = new UserServices(userDetailRepository, _mapper,logger);
-            MetaDataService = new MetaDataServices(metaDataRepository, _mapper, configuration);
-            LoginService = new LoginServices(loginRepository, _mapper, configuration);
-            FileService = new FileServices(fileRepository, _mapper, configuration);
+            MetaDataService = new MetaDataServices(UserService,metaDataRepository, _mapper, configuration);
+            LoginService = new LoginServices(loginRepository, _mapper, configuration,UserService);
+            FileService = new FileServices(fileRepository, _mapper, configuration,UserService);
             UserController = new UserController( _mapper, UserService, logger);
             MetaDataController = new MetaDataController( MetaDataService, logger);
             loginController = new LoginController(logger, configuration, LoginService);

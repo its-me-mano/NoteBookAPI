@@ -19,11 +19,13 @@ namespace NoteBookAPI.Services
         private readonly ILoginRepositories loginRepository;
         private IConfiguration configuration;
         private readonly IMapper mapper;
-        public LoginServices(ILoginRepositories _loginRepository, IMapper _mapper, IConfiguration _configuration)
+        private readonly IUserServices _userservice;
+        public LoginServices(ILoginRepositories _loginRepository, IMapper _mapper, IConfiguration _configuration,IUserServices userService)
         {
             loginRepository = _loginRepository ?? throw new ArgumentNullException(nameof(_loginRepository));
             mapper = _mapper ?? throw new ArgumentNullException(nameof(_mapper));
             configuration = _configuration ?? throw new ArgumentNullException(nameof(_configuration));
+            _userservice = userService;
         }
         ///<summary>
         /// Generate webtoken
@@ -74,8 +76,8 @@ namespace NoteBookAPI.Services
         ///<param name="statuscode"></param>
         public ErrorDto ErrorToReturn(string statuscode, string description)
         {
-            ErrorManage errorManage = new ErrorManage();
-            return errorManage.ReturningError(statuscode, description);
+
+            return _userservice.ErrorToReturn(statuscode, description);
         }
     }
 }

@@ -17,11 +17,14 @@ namespace NoteBookAPI.Services
         private readonly IMetaDataRepositories fileRepository;
         private IConfiguration configuration;
         private readonly IMapper mapper;
-        public MetaDataServices(IMetaDataRepositories _fileRepository, IMapper _mapper, IConfiguration _configuration)
+        private IUserServices _userServices;
+        public MetaDataServices(IUserServices userServices,IMetaDataRepositories _fileRepository, IMapper _mapper, IConfiguration _configuration)
         {
             fileRepository = _fileRepository ?? throw new ArgumentNullException(nameof(_fileRepository));
             mapper = _mapper ?? throw new ArgumentNullException(nameof(_mapper));
             configuration = _configuration ?? throw new ArgumentNullException(nameof(_configuration));
+            _userServices = userServices;
+            
         }
         ///<summary>
         /// find the key from the metadata 
@@ -39,7 +42,7 @@ namespace NoteBookAPI.Services
             MetaDataDto meta = new MetaDataDto();
             meta.Description = refSetFromRepo.Description;
             meta.Id = refSetFromRepo.Id;
-            meta.Types = refSetFromRepo.Key;
+            meta.Key = refSetFromRepo.Key;
             meta.RefTerms = value.ToList();
             return meta;
         }
@@ -50,8 +53,7 @@ namespace NoteBookAPI.Services
         ///<param name="statuscode"></param>
         public ErrorDto ErrorToReturn(string statuscode, string description)
         {
-            ErrorManage errorManage = new ErrorManage();
-            return errorManage.ReturningError(statuscode, description);
+            return _userServices.ErrorToReturn(statuscode, description);
         }
            
         

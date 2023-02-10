@@ -14,7 +14,7 @@ namespace NoteBookAPI.Models
         ///Type of the metaData
         ///</summary>
         [JsonProperty(PropertyName = "types")]
-        public string Types { get; set; }
+        public string Key { get; set; }
         ///<summary>
         ///Description of the metadata
         ///</summary>
